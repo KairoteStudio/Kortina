@@ -64,15 +64,17 @@ export const useUpdater = () => {
       setStatus('downloading');
       setProgress(0);
       let downloaded = 0;
+      let totalLength = 0;
       await update.downloadAndInstall((event) => {
         switch (event.event) {
           case 'Started':
             setProgress(0);
+            totalLength = event.data.contentLength || 0;
             break;
           case 'Progress':
             downloaded += event.data.chunkLength;
-            if (update.contentLength && update.contentLength > 0) {
-              setProgress(Math.round((downloaded / update.contentLength) * 100));
+            if (totalLength > 0) {
+              setProgress(Math.round((downloaded / totalLength) * 100));
             }
             break;
           case 'Finished':
@@ -103,21 +105,12 @@ export const useUpdater = () => {
       setError('无效的渠道值');
       return;
     }
-    setChannel(newChannel);
+    setChannel(newChannel as 'nightly' | 'canary' | 'stable');
     localStorage.setItem('kortina_update_channel', newChannel);
 
-    // 强制 Tauri Updater 使用新渠道
-    try {
-      import('@tauri-apps/plugin-updater').then(({ setChannel: tauriSetChannel }) => {
-        tauriSetChannel(newChannel as any);
-      }).catch(err => {
-        console.error('Failed to set updater channel:', err);
-        setError('设置渠道失败');
-      });
-    } catch (err) {
-      console.error('Failed to set updater channel:', err);
-      setError('设置渠道失败');
-    }
+    // Note: Tauri updater plugin doesn't expose a setChannel API
+    // Channel switching is handled via tauri.conf.json endpoint configuration
+    console.log(`Update channel changed to: ${newChannel}`);
   }, [setChannel, setError]);
 
   return {

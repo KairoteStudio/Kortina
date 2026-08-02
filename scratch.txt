@@ -1,0 +1,17 @@
+
+Run npx @tauri-apps/cli build --target x86_64-unknown-linux-gnu --verbose
+       Debug [tauri_cli::helpers::app_paths] Found Tauri project inside /home/runner/work/Kortina/Kortina/Kortina/src-tauri on early lookup
+        Info [tauri_cli::build] Looking up installed tauri packages to check mismatched versions...
+     Running [tauri_cli::helpers] beforeBuildCommand `npm run build`
+       Debug [tauri_cli::helpers] Setting environment for hook {"TAURI_ENV_TARGET_TRIPLE": "x86_64-unknown-linux-gnu", "TAURI_ENV_ARCH": "x86_64", "TAURI_ENV_PLATFORM": "linux", "TAURI_ENV_FAMILY": "unix", "TAURI_ENV_PLATFORM_VERSION": "24.4.0"}
+     Running [tauri_cli] Command `sh -c npm run build`
+> kortina@26.5.0-Nightly.02-nightly.11+20260802 build
+> tsc && vite build
+Error: src/hooks/useUpdater.ts(74,24): error TS2339: Property 'contentLength' does not exist on type 'Update'.
+Error: src/hooks/useUpdater.ts(74,48): error TS2339: Property 'contentLength' does not exist on type 'Update'.
+Error: src/hooks/useUpdater.ts(75,59): error TS2339: Property 'contentLength' does not exist on type 'Update'.
+Error: src/hooks/useUpdater.ts(106,16): error TS2345: Argument of type 'string' is not assignable to parameter of type 'UpdateChannel'.
+Error: src/hooks/useUpdater.ts(111,52): error TS2339: Property 'setChannel' does not exist on type 'typeof import("/home/runner/work/Kortina/Kortina/Kortina/node_modules/@tauri-apps/plugin-updater/dist-js/index")'.
+beforeBuildCommand `npm run build` failed with exit code 2
+       Error [tauri_cli_node] beforeBuildCommand `npm run build` failed with exit code 2
+Error: Process completed with exit code 1.
