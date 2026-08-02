@@ -1,0 +1,116 @@
+
+
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-Thin.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-ThinItalic.woff2') format('woff2');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-ExtraLight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-ExtraLightItalic.woff2') format('woff2');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-LightItalic.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono';
+  src: url('./Litalagical_Mono/webfonts/LitalagicaLMono-ExtraBoldItalic.woff2') format('woff2');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+
+@font-face {
+  font-family: 'LitalagicaL Mono NL';
+  src: url('./Litalagical_Mono/ttf/LitalagicaLMonoNL-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono NL';
+  src: url('./Litalagical_Mono/ttf/LitalagicaLMonoNL-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono NL';
+  src: url('./Litalagical_Mono/ttf/LitalagicaLMonoNL-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono NL';
+  src: url('./Litalagical_Mono/ttf/LitalagicaLMonoNL-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+
+@font-face {
+  font-family: 'LitalagicaL Mono Variable';
+  src: url('./Litalagical_Mono/variable/LitalagicaLMono[wght].ttf') format('truetype-variations');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LitalagicaL Mono Variable';
+  src: url('./Litalagical_Mono/variable/LitalagicaLMono-Italic[wght].ttf') format('truetype-variations');
+  font-weight: 100 800;
+  font-style: italic;
+  font-display: swap;
+}

@@ -1,0 +1,683 @@
+.vcs-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 12px;
+  font-family: var(--font-kortina);
+  color: var(--text-primary);
+  
+  position: relative;
+  z-index: 10;
+  pointer-events: auto !important;
+}
+
+.vcs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vcs-tabs {
+  display: flex;
+  gap: 16px;
+  border-bottom: none;
+}
+
+.vcs-tab {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 0;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+}
+
+.vcs-tab:hover {
+  color: var(--text-primary);
+}
+
+.vcs-tab.active {
+  color: var(--text-primary);
+}
+
+.vcs-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--text-primary);
+}
+
+.tab-badge {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.vcs-tab-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.file-diff-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: none; 
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.change-item:hover .file-diff-btn {
+  display: flex;
+}
+
+.file-diff-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.vcs-footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.vcs-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.vcs-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.vcs-action-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.vcs-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.init-repo-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.init-repo-btn:hover {
+  background-color: var(--text-secondary);
+}
+
+.init-repo-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vcs-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.vcs-empty-state p {
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.vcs-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--error-bg);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.vcs-branch-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: var(--bg-primary);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.branch-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  transition: all 0.2s ease;
+}
+
+.branch-action-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.branch-input-container {
+  display: flex;
+  margin-bottom: 12px;
+  gap: 4px;
+}
+
+.branch-input-container input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 12px;
+  outline: none;
+}
+
+.branch-input-container input:focus {
+  border-color: var(--text-primary);
+}
+
+.branch-input-container button {
+  padding: 6px;
+  border: 1px solid var(--text-primary);
+  border-radius: 4px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.branch-input-container button:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.branch-input-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vcs-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.changes-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.add-files-btn, .select-all-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-files-btn:hover, .select-all-btn:hover {
+  background-color: var(--bg-primary);
+}
+
+.add-files-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vcs-branches {
+  margin-bottom: 16px;
+}
+
+.branch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.branch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.branch-item-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.branch-item-actions {
+  display: none;
+  gap: 4px;
+}
+
+.branch-item:hover .branch-item-actions {
+  display: flex;
+}
+
+.branch-item-action {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.branch-item-action:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.branch-item-action.delete:hover {
+  color: var(--text-secondary);
+  background-color: var(--error-bg);
+}
+
+.branch-item-action.merge:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+.branch-item:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.branch-item.current {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.current-badge {
+  margin-left: auto;
+  font-size: 10px;
+  padding: 1px 4px;
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border-radius: 3px;
+}
+
+.vcs-changes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.no-changes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.changes-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.change-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.change-item:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.change-item.selected {
+  background-color: var(--bg-primary);
+}
+
+.change-checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-size: 10px;
+}
+
+.status-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: var(--bg-primary);
+}
+
+.status-icon.untracked {
+  background-color: var(--text-secondary);
+}
+
+.status-icon.modified {
+  background-color: var(--bg-primary);
+}
+
+.status-icon.added {
+  background-color: var(--bg-primary);
+}
+
+.status-icon.deleted {
+  background-color: var(--bg-secondary);
+}
+
+.status-icon.staged {
+  background-color: var(--text-primary);
+}
+
+.status-icon.renamed {
+  background-color: var(--bg-primary);
+}
+
+.status-icon.copied {
+  background-color: var(--bg-primary);
+}
+
+.status-icon.conflicted {
+  background-color: var(--bg-secondary);
+}
+
+.file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-name.strikethrough {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.file-name.faded {
+  opacity: 0.6;
+}
+
+.vcs-resource-groups {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.resource-group {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.resource-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background-color: var(--bg-primary);
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.resource-group-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.resource-group-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.group-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.group-action-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.group-action-btn.discard:hover {
+  color: var(--text-secondary);
+  background-color: var(--error-bg);
+}
+
+.group-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resource-actions {
+  display: none;
+  gap: 2px;
+}
+
+.change-item:hover .resource-actions {
+  display: flex;
+}
+
+.resource-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.resource-action-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.resource-action-btn.discard:hover {
+  color: var(--text-secondary);
+  background-color: var(--error-bg);
+}
+
+.resource-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+.commit-input-container {
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.commit-input-container textarea {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 12px;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  font-family: var(--font-kortina);
+}
+
+.commit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px;
+  background-color: var(--bg-secondary);
+}
+
+.commit-actions button {
+  padding: 4px 12px;
+  border: 1px solid var(--text-primary);
+  border-radius: 3px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s ease;
+}
+
+.commit-actions button:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.commit-actions button:first-child {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+}
+
+.commit-actions button:first-child:hover {
+  background-color: var(--text-secondary);
+}
+
+.commit-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.commit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.commit-btn:hover {
+  background-color: var(--text-secondary);
+}
+
+.commit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,0 +1,195 @@
+
+
+.extensions-settings {
+  padding-bottom: 12px;
+}
+
+.extensions-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.extensions-toolbar-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.extensions-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+}
+
+.extensions-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.extensions-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.extensions-search-input {
+  width: 100%;
+  padding-left: 32px !important;
+  box-sizing: border-box;
+}
+
+.extensions-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.extensions-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.extensions-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.extensions-tab:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.extensions-tab.active {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-weight: 500;
+  border-color: var(--border-color);
+}
+
+.extensions-plugin-row {
+  align-items: flex-start;
+}
+
+.extensions-plugin-row .setting-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.extensions-version {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.extensions-meta-tag {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 1px 5px;
+  background: var(--bg-primary);
+}
+
+.extensions-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.extensions-inline-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.extensions-inline-actions .settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.extensions-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 16px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.extensions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 16px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.extensions-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.extensions-market-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 4px 0 8px;
+}
+
+.extensions-installed-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.extensions-pending-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+
+.extensions-settings .spinning {
+  animation: extensions-settings-spin 0.8s linear infinite;
+}
+
+@keyframes extensions-settings-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.extensions-settings .settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

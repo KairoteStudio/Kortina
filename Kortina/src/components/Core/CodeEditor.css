@@ -1,0 +1,108 @@
+
+.monaco-editor {
+  
+  
+}
+
+
+.monaco-editor .line-numbers {
+  opacity: 0.5;
+  display: block !important;
+  text-align: right;
+  
+  padding-right: 8px !important;
+  line-height: inherit !important;
+  padding-top: 6px !important; 
+}
+
+.monaco-editor .line-numbers.active-line-number {
+  opacity: 1;
+  color: var(--text-primary) !important;
+}
+
+
+.monaco-editor .margin-view-overlays .cldr {
+  
+  margin-left: 0 !important;
+  
+  padding-top: 4px !important;
+}
+
+
+.code-editor-container {
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  
+  
+  background-color: var(--editor-bg, var(--bg-primary));
+  transition: border-color 0.2s;
+  
+  position: relative;
+  z-index: 1;
+}
+
+
+.code-editor-container .status-bar,
+.code-editor-container .code-editor-status-bar {
+  border-top: 1px solid var(--border-color);
+  font-family: var(--font-kortina);
+  letter-spacing: 0.3px;
+  height: 22px;
+  min-height: 22px;
+  max-height: 22px;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  user-select: none;
+  flex-shrink: 0;
+  order: unset;
+}
+
+.code-editor-container .status-bar span {
+  padding: 0 10px;
+  cursor: default;
+}
+
+
+.monaco-editor .scrollbar .slider {
+  background: var(--bg-tertiary) !important;
+  border-radius: 10px !important;
+  transition: background 0.2s;
+}
+
+.monaco-editor .scrollbar .slider:hover {
+  background: var(--bg-secondary) !important;
+}
+
+.monaco-editor .scrollbar .slider.active {
+  background: var(--text-secondary) !important;
+}
+
+
+.monaco-editor .view-overlays .current-line {
+  border: none !important;
+  background-color: var(--bg-tertiary) !important;
+}
+
+
+.monaco-editor .selectionHighlight {
+  background-color: var(--bg-tertiary) !important;
+  border-radius: 2px;
+}
+
+
+.monaco-editor .suggest-widget {
+  border-radius: 6px !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+
+.monaco-editor .monaco-hover {
+  border-radius: 6px !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid var(--border-color) !important;
+}

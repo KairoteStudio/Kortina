@@ -1,0 +1,7 @@
+[[permission]]
+identifier = "input-dialog-window"
+description = "Commands required by the input dialog"
+commands.allow = [
+  "get_input_dialog_state",
+  "close_input_dialog"
+]

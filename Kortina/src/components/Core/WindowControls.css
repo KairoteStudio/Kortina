@@ -1,0 +1,60 @@
+.window-controls {
+  display: flex;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.window-control-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 8px;
+  margin: 2px;
+}
+
+.window-control-button:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.window-control-button:active {
+  transform: scale(0.95);
+  background: var(--bg-tertiary);
+  opacity: 0.8;
+}
+
+.window-control-button.close:hover {
+  background: var(--bg-secondary);
+  color: #ffffff;
+}
+
+.window-control-button.close:active {
+  background: var(--bg-secondary);
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+.window-control-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.window-control-button.disabled:hover {
+  background: transparent;
+  transform: none;
+  opacity: 0.5;
+}
+
+.window-control-button.disabled:active {
+  background: transparent;
+  transform: none;
+  opacity: 0.5;
+}

@@ -1,0 +1,7 @@
+[[permission]]
+identifier = "settings-window"
+description = "Commands required by the settings window"
+commands.allow = [
+  "detect_compiler_path",
+  "update_settings_theme"
+]

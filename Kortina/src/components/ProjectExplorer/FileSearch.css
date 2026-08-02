@@ -1,0 +1,128 @@
+
+.file-search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  z-index: 1000;
+}
+
+.file-search-container {
+  width: 90%;
+  max-width: 600px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.file-search-input-container {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.file-search-icon {
+  color: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.file-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+.file-search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.file-search-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-search-close:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.file-search-results {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.file-search-result-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.file-search-result-item:hover,
+.file-search-result-item.selected {
+  background-color: var(--bg-tertiary);
+}
+
+.file-search-result-item.selected .file-search-result-name {
+  color: var(--text-primary);
+}
+
+.file-search-result-item:last-child {
+  border-bottom: none;
+}
+
+.file-search-result-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.file-search-result-path {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-search-no-results {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+
+.vscode-dark .file-search-container {
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+
+.vscode-high-contrast .file-search-container {
+  border-color: var(--text-primary);
+}
+
+.vscode-high-contrast .file-search-result-item:hover {
+  background-color: var(--bg-tertiary);
+}

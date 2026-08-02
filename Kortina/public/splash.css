@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+html {
+  background-color: #1e1e1e;
+}
+
+html[data-theme="light"] {
+  background-color: #ffffff;
+}
+
+html[data-theme="kortina"],
+html[data-theme="dark"] {
+  background-color: #1e1e1e;
+}
+
+.kortina-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 120ms ease-out;
+}
+
+.kortina-splash.fade-out {
+  opacity: 0;
+}
+
+html[data-splash-hidden] .kortina-splash {
+  display: none;
+}
+
+.splash-region {
+  transition: opacity 120ms ease-out;
+}
+
+.splash-region.splash-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-top {
+  height: 35px;
+  flex-shrink: 0;
+}
+
+.splash-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.splash-sidebar {
+  width: 48px;
+  flex-shrink: 0;
+}
+
+.splash-main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.splash-explorer {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+.splash-editor {
+  flex: 1;
+  min-width: 0;
+}
+
+.splash-status {
+  height: 24px;
+  flex-shrink: 0;
+}

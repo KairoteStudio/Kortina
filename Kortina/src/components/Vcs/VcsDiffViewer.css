@@ -1,0 +1,231 @@
+.diff-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.diff-viewer-container {
+  width: 90%;
+  height: 80%;
+  max-width: 1200px;
+  background-color: var(--bg-primary);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.diff-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.diff-viewer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.diff-viewer-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.diff-viewer-close:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.diff-viewer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.diff-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--text-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.diff-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  padding: 16px;
+  text-align: center;
+}
+
+.diff-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  padding: 16px;
+  text-align: center;
+}
+
+.diff-empty p {
+  margin-top: 12px;
+}
+
+.diff-files {
+  display: flex;
+  flex-direction: column;
+}
+
+.diff-file {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.diff-file:last-child {
+  border-bottom: none;
+}
+
+.diff-file-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: var(--bg-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.diff-file-header:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.diff-file-toggle {
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.diff-file-name {
+  flex: 1;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.diff-file-stats {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.diff-file-content {
+  background-color: var(--bg-primary);
+}
+
+.diff-hunk {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.diff-hunk:last-child {
+  border-bottom: none;
+}
+
+.diff-hunk-header {
+  background-color: var(--bg-secondary);
+  padding: 6px 16px;
+  font-family: var(--font-kortina);
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.diff-line {
+  display: flex;
+  font-family: var(--font-kortina);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.diff-line-number {
+  width: 50px;
+  padding: 0 8px;
+  text-align: right;
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  user-select: none;
+}
+
+.diff-line-number.new {
+  background-color: var(--bg-secondary);
+}
+
+.diff-line.added {
+  background-color: var(--bg-primary);
+}
+
+.diff-line.added .diff-line-number,
+.diff-line.added .diff-line-number.new {
+  background-color: var(--bg-primary);
+}
+
+.diff-line.removed {
+  background-color: var(--error-bg);
+}
+
+.diff-line.removed .diff-line-number,
+.diff-line.removed .diff-line-number.new {
+  background-color: var(--error-bg);
+}
+
+.diff-line.context {
+  background-color: var(--bg-primary);
+}
+
+.diff-line-content {
+  flex: 1;
+  padding: 0 8px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

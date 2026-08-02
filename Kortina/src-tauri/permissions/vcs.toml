@@ -1,0 +1,27 @@
+[[permission]]
+identifier = "vcs-window"
+description = "Commands required by the VCS window"
+commands.allow = [
+  "vcs_is_git_repository",
+  "vcs_init",
+  "vcs_status",
+  "vcs_add",
+  "vcs_unstage",
+  "vcs_discard",
+  "vcs_commit",
+  "vcs_log",
+  "vcs_branch_list",
+  "vcs_checkout",
+  "vcs_create_branch",
+  "vcs_diff",
+  "vcs_push",
+  "vcs_pull",
+  "vcs_fetch",
+  "vcs_merge",
+  "vcs_stash",
+  "vcs_delete_branch",
+  "vcs_remote_list",
+  "vcs_add_remote",
+  "update_vcs_theme",
+  "close_vcs_panel"
+]

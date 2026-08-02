@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Kortina",
+  "version": "26.5.0-nightly.2",
+  "identifier": "org.kairotestudio.kortina",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Kortina",
+        "label": "main",
+        "width": 1200,
+        "height": 800,
+        "decorations": false,
+        "transparent": false,
+        "backgroundColor": "#1e1e1e",
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' customprotocol: asset:; connect-src ipc: http://ipc.localhost http: https: ws: wss:; img-src 'self' asset: http://asset.localhost data: blob: http: https:; style-src 'self' 'unsafe-inline'; font-src 'self' asset: http://asset.localhost data:; script-src 'self'; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' blob:; object-src 'none'; base-uri 'self'",
+      "capabilities": ["main-capability", "vcs-capability", "settings-capability", "input-dialog-capability", "compile-options-capability"]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

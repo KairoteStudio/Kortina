@@ -1,0 +1,88 @@
+.hero-section {
+  --hero-bg: #0b0c10;
+  --hero-ink: #d7dae2;
+
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--hero-bg);
+  color: var(--hero-ink);
+  isolation: isolate;
+}
+
+
+.hero-title {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0 4vw;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 700;
+  font-size: clamp(72px, 20vw, 190px);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--hero-bg);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+
+.hero-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+  letter-spacing: 0;
+}
+
+.hero-char {
+  position: absolute;
+  display: block;
+  width: 12px;
+  height: 24px;
+  color: var(--hero-ink);
+  opacity: 0.28;
+  white-space: pre;
+  will-change: transform, opacity;
+  contain: layout style paint;
+}
+
+.hero-char.is-attached {
+  opacity: 0.55;
+  color: #f2f4f8;
+  z-index: 2;
+}
+
+.hero-char.is-clearing {
+  opacity: 0.2;
+  z-index: 1;
+}
+
+
+.hero-char.is-ambient {
+  opacity: 0.26;
+  animation: hero-ambient-drift var(--drift-dur, 6s) ease-in-out var(--drift-delay, 0s) infinite
+    alternate;
+}
+
+@keyframes hero-ambient-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--drift-x, 8px), var(--drift-y, -6px), 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-char.is-ambient {
+    animation: none;
+  }
+}

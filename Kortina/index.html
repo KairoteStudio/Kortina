@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kortina</title>
+    <link rel="stylesheet" href="/splash.css" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <div class="kortina-splash" id="kortina-splash">
+      <div class="splash-region splash-top" data-region="top"></div>
+      <div class="splash-body">
+        <div class="splash-region splash-sidebar" data-region="sidebar"></div>
+        <div class="splash-main">
+          <div class="splash-region splash-explorer" data-region="explorer"></div>
+          <div class="splash-region splash-editor" data-region="editor"></div>
+        </div>
+      </div>
+      <div class="splash-region splash-status" data-region="status"></div>
+    </div>
+    <script>
+      (function () {
+        var query = new URLSearchParams(window.location.search);
+        var windowType = query.get('window');
+        var isMainWindow = !(
+          windowType === 'settings' ||
+          windowType === 'vcs' ||
+          windowType === 'loading' ||
+          windowType === 'welcome' ||
+          windowType === 'input-dialog' ||
+          windowType === 'compile-options'
+        );
+
+        var settings = null;
+        try {
+          var raw = window.localStorage.getItem('kortina_settings_v3');
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            settings = parsed && parsed.state ? parsed.state : parsed;
+          }
+        } catch (e) {}
+
+        var theme = 'dark';
+        var themeGroup = 'default';
+        if (settings) {
+          if (settings.theme === 'light' || settings.theme === 'dark' || settings.theme === 'kortina') {
+            theme = settings.theme;
+          }
+          if (settings.themeGroup === 'islandtheme' || settings.themeGroup === 'default') {
+            themeGroup = settings.themeGroup;
+          }
+        }
+
+        var root = document.documentElement;
+        root.setAttribute('data-theme', theme);
+        root.setAttribute('data-theme-group', themeGroup);
+
+        if (!isMainWindow) {
+          root.setAttribute('data-splash-hidden', '');
+          return;
+        }
+
+        var colors = {
+          default: {
+            light: { top: '#e9ecef', sidebar: '#f8f9fa', explorer: '#f8f9fa', editor: '#ffffff', status: '#f8f9fa' },
+            dark: { top: '#2d2d30', sidebar: '#252526', explorer: '#252526', editor: '#1e1e1e', status: '#252526' },
+            kortina: { top: '#2d2d30', sidebar: '#252526', explorer: '#252526', editor: '#1e1e1e', status: '#252526' }
+          },
+          islandtheme: {
+            light: { top: '#f5f5f5', sidebar: '#f8f9fa', explorer: '#f8f9fa', editor: '#ffffff', status: '#ffffff' },
+            dark: { top: '#202124', sidebar: '#26272b', explorer: '#26272b', editor: '#1a1b1e', status: '#1a1b1e' },
+            kortina: { top: '#202124', sidebar: '#26272b', explorer: '#26272b', editor: '#1a1b1e', status: '#1a1b1e' }
+          }
+        };
+
+        var groupPalettes = colors[themeGroup] || colors.default;
+        var palette = groupPalettes[theme] || groupPalettes.dark || colors.default.dark;
+
+        var splash = document.getElementById('kortina-splash');
+        if (splash) {
+          splash.querySelector('.splash-top').style.backgroundColor = palette.top;
+          splash.querySelector('.splash-sidebar').style.backgroundColor = palette.sidebar;
+          splash.querySelector('.splash-explorer').style.backgroundColor = palette.explorer;
+          splash.querySelector('.splash-editor').style.backgroundColor = palette.editor;
+          splash.querySelector('.splash-status').style.backgroundColor = palette.status;
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

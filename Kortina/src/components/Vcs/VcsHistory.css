@@ -1,0 +1,200 @@
+.vcs-history {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 12px;
+  font-family: var(--font-kortina);
+  color: var(--text-primary);
+}
+
+.vcs-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.vcs-history-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.refresh-btn {
+  background: none;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s ease;
+}
+
+.refresh-btn:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vcs-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.vcs-empty-state p {
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.vcs-error {
+  background-color: var(--error-bg);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.commits-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.commit-item {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  flex-shrink: 0;
+}
+
+.commit-header {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.commit-header:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.commit-toggle {
+  margin-right: 8px;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.commit-info {
+  flex: 1;
+}
+
+.commit-title {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.commit-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.commit-author, .commit-date, .commit-hash {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.commit-details {
+  padding: 0 12px 12px 40px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.commit-full-message {
+  margin-bottom: 10px;
+}
+
+.commit-message-line {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 4px;
+  color: var(--text-secondary);
+}
+
+.commit-full-hash {
+  margin-bottom: 12px;
+  font-size: 11px;
+  font-family: var(--font-kortina);
+  color: var(--text-secondary);
+}
+
+.commit-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.commit-action-btn {
+  background: none;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 10px;
+  transition: all 0.2s ease;
+}
+
+.commit-action-btn:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.load-more-btn {
+  background: none;
+  border: 1px solid var(--text-primary);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.load-more-btn:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.load-more-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

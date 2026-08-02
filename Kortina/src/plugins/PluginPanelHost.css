@@ -1,0 +1,68 @@
+.plugin-panel-host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.plugin-panel-host .panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plugin-panel-host-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.plugin-panel-host-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.plugin-panel-content {
+  height: 100%;
+  min-height: 0;
+}
+
+.plugin-panel-content-placeholder,
+.plugin-panel-fallback {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.plugin-panel-fallback-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--text-primary);
+}
+
+.plugin-panel-fallback-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.plugin-panel-fallback-id {
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.plugin-panel-content .hint {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.plugin-panel-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  word-break: break-all;
+}

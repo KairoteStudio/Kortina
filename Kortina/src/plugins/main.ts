@@ -1,0 +1,11 @@
+export * from './index';
+export { PluginManager, pluginManager, PluginModuleLoadError, PLUGIN_PERMISSIONS } from './PluginManager';
+export { usePlugins, usePluginCommands, usePluginNotifications } from './usePlugins';
+export { PluginsPanel } from './PluginsPanel';
+export { initializeGrammarRegistry, registerGrammarWithMonaco, unregisterGrammar, isGrammarRegistered, getRegisteredLanguages } from './GrammarRegistry';
+export { pluginPanelRegistry } from './PluginPanelRegistry';
+export type { PluginPanelProps, PluginPanelComponent } from './PluginPanelRegistry';
+export { PluginPanelHost, toPluginPanelViewId, parsePluginPanelViewId, isPluginPanelView, PLUGIN_PANEL_VIEW_PREFIX } from './PluginPanelHost';
+export { PluginPanelContent, PluginPanels, PluginMenu, PluginThemeSelector, PluginContributions } from './PluginContributions';
+export { marketplaceClient, MarketplaceClient, MarketplaceApiError } from './marketplace';
+export type { MarketplaceHealth, MarketplaceListQuery, MarketplaceListResponse, MarketplacePluginSummary, MarketplacePluginDetail, MarketplaceLatestResponse, MarketplaceSource, MarketplaceSort } from './marketplace';

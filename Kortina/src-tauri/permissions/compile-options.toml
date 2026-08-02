@@ -1,0 +1,7 @@
+[[permission]]
+identifier = "compile-options-window"
+description = "Commands required by the compile options window"
+commands.allow = [
+  "get_compile_options_state",
+  "close_compile_options"
+]
