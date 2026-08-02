@@ -197,6 +197,7 @@ jobs:
           bundle: Kortina-nightly.flatpak
           manifest-path: .github/flatpak/org.kairotestudio.kortina.yml
           cache: true
+          run-tests: false
 
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@v4

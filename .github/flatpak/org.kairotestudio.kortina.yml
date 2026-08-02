@@ -20,15 +20,20 @@ build-options:
   env:
     NPM_CONFIG_CACHE: /run/build/kortina/.npm-cache
     CARGO_HOME: /run/build/kortina/.cargo
+    CARGO_NET_OFFLINE: 'false'
+    CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
 modules:
   - name: kortina
     buildsystem: simple
     build-commands:
       - |
+        export PATH="/usr/lib/sdk/node22/bin:/usr/lib/sdk/rust-stable/bin:$PATH"
+        export HOME=/run/build/kortina
         cd Kortina
-        npm ci --cache /run/build/kortina/.npm-cache
+        npm ci --cache /run/build/kortina/.npm-cache --prefer-offline
         npm run build
         cd src-tauri
+        cargo fetch
         cargo build --release
         mkdir -p /app/bin
         cp target/release/kortina /app/bin/
