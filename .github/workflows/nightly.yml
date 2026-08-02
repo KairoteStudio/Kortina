@@ -163,18 +163,30 @@ jobs:
 
       - name: Build Flatpak
         run: |
+          # 调试：查看下载的文件结构
+          echo "=== linux-build contents ==="
+          find linux-build -type f 2>/dev/null || ls -la linux-build/
+          
           mkdir -p build-dir
           cd build-dir
           
-          # 解压 deb 包获取二进制
-          ar x ../linux-build/*.deb
+          # 查找并解压 deb 包
+          DEB_FILE=$(find ../linux-build -name "*.deb" | head -1)
+          if [ -z "$DEB_FILE" ]; then
+            echo "No .deb file found!"
+            exit 1
+          fi
+          echo "Found deb: $DEB_FILE"
+          ar x "$DEB_FILE"
           tar -xf data.tar.xz
           
           # 创建 Flatpak 目录结构
           mkdir -p /app/bin /app/share/applications /app/share/icons/hicolor/256x256/apps
           
           # 复制二进制
-          cp usr/bin/kortina /app/bin/ || cp opt/kortina/bin/kortina /app/bin/ || find . -name "kortina" -type f -exec cp {} /app/bin/ \;
+          cp usr/bin/kortina /app/bin/ 2>/dev/null || \
+          cp opt/kortina/bin/kortina /app/bin/ 2>/dev/null || \
+          find . -name "kortina" -type f -exec cp {} /app/bin/ \;
           
           # 创建 desktop 文件
           cat > /app/share/applications/org.kairotestudio.kortina.desktop << 'EOF'
@@ -187,8 +199,8 @@ jobs:
           Categories=Development;IDE;
           EOF
           
-          # 复制图标
-          cp ../linux-build/*/src-tauri/icons/256x256.png /app/share/icons/hicolor/256x256/apps/org.kairotestudio.kortina.png 2>/dev/null || true
+          # 复制图标（从源码目录）
+          find .. -name "256x256.png" | head -1 | xargs -I{} cp {} /app/share/icons/hicolor/256x256/apps/org.kairotestudio.kortina.png 2>/dev/null || true
           
           # 使用 flatpak-builder 打包
           cd ..
