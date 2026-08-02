@@ -1,0 +1,105 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 00:00 运行
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-24.04
+            os: linux
+            arch: amd64
+            target: x86_64-unknown-linux-gnu
+          - platform: ubuntu-24.04-arm
+            os: linux
+            arch: arm64
+            target: aarch64-unknown-linux-gnu
+          - platform: windows-latest
+            os: windows
+            arch: amd64
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: Kortina/package-lock.json
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Install npm dependencies
+        run: npm ci
+        working-directory: ./Kortina
+
+      - name: Build with Tauri
+        run: npm run tauri build -- --target ${{ matrix.target }}
+        working-directory: ./Kortina
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kortina-nightly-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            Kortina/src-tauri/target/release/bundle/**/*.deb
+            Kortina/src-tauri/target/release/bundle/**/*.AppImage
+            Kortina/src-tauri/target/release/bundle/**/*.msi
+            Kortina/src-tauri/target/release/bundle/**/*.exe
+          if-no-files-found: warn
+          retention-days: 7
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: kortina-nightly-*
+
+      - name: Create Nightly Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: Nightly Build ${{ github.run_number }}
+          body: |
+            Automated nightly build from ${{ github.sha }}.
+            
+            **Platforms:**
+            - Linux amd64 (.deb, .AppImage)
+            - Linux arm64 (.deb, .AppImage)
+            - Windows amd64 (.msi)
+          draft: false
+          prerelease: true
+          files: artifacts/**/*.{deb,AppImage,msi,exe}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
