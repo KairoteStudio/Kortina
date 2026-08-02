@@ -178,6 +178,10 @@ jobs:
           cache: npm
           cache-dependency-path: Kortina/package-lock.json
 
+      - name: Install jq
+        run: |
+          apt-get update && apt-get install -y jq
+
       - name: Install npm dependencies
         run: npm ci
         working-directory: ./Kortina
