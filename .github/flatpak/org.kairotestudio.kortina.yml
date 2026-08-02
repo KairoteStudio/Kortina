@@ -16,7 +16,6 @@ finish-args:
   - --socket=pcsc
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node22/bin
-  share-network: true
   env:
     NPM_CONFIG_CACHE: /run/build/kortina/.npm-cache
     CARGO_HOME: /run/build/kortina/.cargo
@@ -25,13 +24,15 @@ build-options:
 modules:
   - name: kortina
     buildsystem: simple
+    build-options:
+      share-network: true
     build-commands:
       - |
         export PATH="/usr/lib/sdk/node22/bin:/usr/lib/sdk/rust-stable/bin:$PATH"
         export HOME=/run/build/kortina
         cd Kortina
-        npm ci --cache /run/build/kortina/.npm-cache --prefer-offline
-        npm run build
+        npm ci --cache /run/build/kortina/.npm-cache
+        npx tsc && npx vite build
         cd src-tauri
         cargo fetch
         cargo build --release
