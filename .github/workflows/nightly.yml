@@ -5,6 +5,9 @@ on:
     - cron: '0 0 * * *'  # 每天 UTC 00:00 运行
   workflow_dispatch:  # 允许手动触发
 
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -33,7 +36,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
           cache-dependency-path: Kortina/package-lock.json
 
