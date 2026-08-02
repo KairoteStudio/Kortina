@@ -59,14 +59,16 @@ jobs:
             libappindicator3-dev \
             librsvg2-dev \
             patchelf \
-            xdg-utils
+            xdg-utils \
+            dpkg-dev
 
       - name: Install npm dependencies
         run: npm ci
         working-directory: ./Kortina
 
       - name: Build with Tauri
-        run: npx @tauri-apps/cli build --target ${{ matrix.target }}
+        id: tauri-build
+        run: npx @tauri-apps/cli build --target ${{ matrix.target }} --verbose
         working-directory: ./Kortina
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,16 +76,25 @@ jobs:
       - name: Debug build output
         shell: bash
         run: |
-          echo "=== release dir ==="
-          ls Kortina/src-tauri/target/release/ 2>/dev/null || echo "release dir not found"
+          echo "=== target dir ==="
+          ls Kortina/src-tauri/target/${{ matrix.target }}/release/ 2>/dev/null || echo "target-specific release dir not found"
+          echo "=== default release dir ==="
+          ls Kortina/src-tauri/target/release/ 2>/dev/null || echo "default release dir not found"
           echo "=== bundle dir ==="
-          find Kortina/src-tauri/target/release/bundle/ -type f 2>/dev/null || echo "bundle dir not found or empty"
+          find Kortina/src-tauri/target/ -path "*/bundle/*" -type f 2>/dev/null || echo "no bundle files found"
+          echo "=== all binaries ==="
+          find Kortina/src-tauri/target/ -name "kortina" -o -name "kortina.exe" 2>/dev/null || echo "no binary found"
+          echo "=== full tree (depth 3) ==="
+          find Kortina/src-tauri/target/ -maxdepth 3 -type d 2>/dev/null | head -50 || echo "target dir not found"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: kortina-nightly-${{ matrix.os }}-${{ matrix.arch }}
           path: |
+            Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
+            Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
+            Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
             Kortina/src-tauri/target/release/bundle/**/*.deb
             Kortina/src-tauri/target/release/bundle/**/*.AppImage
             Kortina/src-tauri/target/release/bundle/**/*.exe
