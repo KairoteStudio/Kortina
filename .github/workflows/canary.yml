@@ -93,24 +93,28 @@ jobs:
         working-directory: ./Kortina
 
       - name: Update version (package.json)
+        shell: bash
         run: |
           VERSION="${{ needs.version.outputs.version }}"
           jq --arg v "${VERSION}" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
         working-directory: ./Kortina
 
       - name: Update version (Cargo.toml)
+        shell: bash
         run: |
           VERSION="${{ needs.version.outputs.version }}"
           sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" Cargo.toml
         working-directory: ./Kortina/src-tauri
 
       - name: Update version (tauri.conf.json)
+        shell: bash
         run: |
           VERSION="${{ needs.version.outputs.version }}"
           jq --arg v "${VERSION}" '.version = $v' tauri.conf.json > tauri.conf.json.tmp && mv tauri.conf.json.tmp tauri.conf.json
         working-directory: ./Kortina/src-tauri
 
       - name: Update updater endpoint (tauri.conf.json)
+        shell: bash
         run: |
           ENDPOINT="https://github.com/${{ github.repository }}/releases/download/canary/latest-canary.json"
           jq --arg e "${ENDPOINT}" '.plugins.updater.endpoints = [$e]' tauri.conf.json > tauri.conf.json.tmp && mv tauri.conf.json.tmp tauri.conf.json
