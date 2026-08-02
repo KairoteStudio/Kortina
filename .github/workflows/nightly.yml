@@ -70,7 +70,6 @@ jobs:
           path: |
             Kortina/src-tauri/target/release/bundle/**/*.deb
             Kortina/src-tauri/target/release/bundle/**/*.AppImage
-            Kortina/src-tauri/target/release/bundle/**/*.msi
             Kortina/src-tauri/target/release/bundle/**/*.exe
           if-no-files-found: warn
           retention-days: 7
@@ -98,9 +97,9 @@ jobs:
             **Platforms:**
             - Linux amd64 (.deb, .AppImage)
             - Linux arm64 (.deb, .AppImage)
-            - Windows amd64 (.msi)
+            - Windows amd64 (.exe)
           draft: false
           prerelease: true
-          files: artifacts/**/*.{deb,AppImage,msi,exe}
+          files: artifacts/**/*.{deb,AppImage,exe}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
