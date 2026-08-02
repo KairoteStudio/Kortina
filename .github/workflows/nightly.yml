@@ -146,7 +146,7 @@ jobs:
           retention-days: 7
 
   build-flatpak:
-    needs: version
+    needs: [version, build]
     runs-on: ubuntu-latest
     container:
       image: bilelmoussaoui/flatpak-github-actions:gnome-46
@@ -155,49 +155,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download Linux amd64 artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: Kortina/package-lock.json
-
-      - name: Install jq
-        run: |
-          dnf install -y jq
-
-      - name: Install npm dependencies
-        run: npm ci
-        working-directory: ./Kortina
-
-      - name: Update version (package.json)
-        shell: bash
-        run: |
-          VERSION="${{ needs.version.outputs.version }}"
-          jq --arg v "${VERSION}" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
-        working-directory: ./Kortina
-
-      - name: Update version (Cargo.toml)
-        shell: bash
-        run: |
-          VERSION="${{ needs.version.outputs.version }}"
-          sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" Cargo.toml
-        working-directory: ./Kortina/src-tauri
-
-      - name: Update version (tauri.conf.json)
-        shell: bash
-        run: |
-          VERSION="${{ needs.version.outputs.version }}"
-          jq --arg v "${VERSION}" '.version = $v' tauri.conf.json > tauri.conf.json.tmp && mv tauri.conf.json.tmp tauri.conf.json
-        working-directory: ./Kortina/src-tauri
+          name: kortina-nightly-linux-amd64
+          path: linux-build
 
       - name: Build Flatpak
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
-        with:
-          bundle: Kortina-nightly.flatpak
-          manifest-path: .github/flatpak/org.kairotestudio.kortina.yml
-          cache: true
-          run-tests: false
+        run: |
+          mkdir -p build-dir
+          cd build-dir
+          
+          # 解压 deb 包获取二进制
+          ar x ../linux-build/*.deb
+          tar -xf data.tar.xz
+          
+          # 创建 Flatpak 目录结构
+          mkdir -p /app/bin /app/share/applications /app/share/icons/hicolor/256x256/apps
+          
+          # 复制二进制
+          cp usr/bin/kortina /app/bin/ || cp opt/kortina/bin/kortina /app/bin/ || find . -name "kortina" -type f -exec cp {} /app/bin/ \;
+          
+          # 创建 desktop 文件
+          cat > /app/share/applications/org.kairotestudio.kortina.desktop << 'EOF'
+          [Desktop Entry]
+          Name=Kortina
+          Comment=Kortina IDE
+          Exec=kortina
+          Icon=org.kairotestudio.kortina
+          Type=Application
+          Categories=Development;IDE;
+          EOF
+          
+          # 复制图标
+          cp ../linux-build/*/src-tauri/icons/256x256.png /app/share/icons/hicolor/256x256/apps/org.kairotestudio.kortina.png 2>/dev/null || true
+          
+          # 使用 flatpak-builder 打包
+          cd ..
+          flatpak build-export repo build-dir
+          flatpak build-bundle repo Kortina-nightly.flatpak org.kairotestudio.kortina
 
       - name: Upload Flatpak artifact
         uses: actions/upload-artifact@v4
