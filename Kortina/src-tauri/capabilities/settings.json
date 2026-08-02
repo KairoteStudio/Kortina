@@ -21,6 +21,10 @@
     "dialog:allow-open",
     "core:event:allow-listen",
     "core:event:allow-emit",
+    "updater:allow-check",
+    "updater:allow-download",
+    "updater:allow-install",
+    "updater:default",
     "settings-window"
   ]
 }

@@ -28,6 +28,10 @@
     "fs:allow-read-dir",
     "fs:allow-exists",
     "shell:allow-open",
+    "updater:allow-check",
+    "updater:allow-download",
+    "updater:allow-install",
+    "updater:default",
     "allow-all"
   ]
 }

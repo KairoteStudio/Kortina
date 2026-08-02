@@ -1018,6 +1018,45 @@ input:checked + .slider:before {
   margin: 0;
 }
 
+.about-channel-select {
+  min-width: 160px;
+}
+
+.about-channel-select .k-select-menu {
+  min-width: 100%;
+}
+
+.info-value-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.about-btn-small {
+  padding: 5px 12px;
+  font-size: 13px;
+  min-width: auto;
+  white-space: nowrap;
+}
+
+.about-btn-primary {
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+}
+
+.about-btn-primary:hover {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+.update-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
 
 .icon-button {
   display: inline-flex;
