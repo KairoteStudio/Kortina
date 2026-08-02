@@ -16,6 +16,7 @@ finish-args:
   - --socket=pcsc
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node22/bin
+  share-network: true
   env:
     NPM_CONFIG_CACHE: /run/build/kortina/.npm-cache
     CARGO_HOME: /run/build/kortina/.cargo
