@@ -66,12 +66,13 @@ jobs:
         working-directory: ./Kortina
 
       - name: Build with Tauri
-        run: npm run tauri build -- --target ${{ matrix.target }}
+        run: npx @tauri-apps/cli build --target ${{ matrix.target }}
         working-directory: ./Kortina
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Debug build output
+        shell: bash
         run: |
           echo "=== release dir ==="
           ls Kortina/src-tauri/target/release/ 2>/dev/null || echo "release dir not found"
