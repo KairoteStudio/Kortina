@@ -124,7 +124,7 @@ jobs:
 
       - name: Build with Tauri
         id: tauri-build
-        run: npx @tauri-apps/cli build --target ${{ matrix.target }} --verbose
+        run: npx @tauri-apps/cli build --target ${{ matrix.target }} --verbose --config '{"bundle":{"createUpdaterArtifacts":false}}'
         working-directory: ./Kortina
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

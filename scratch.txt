@@ -1,9 +1,14 @@
-Run VERSION="26.5.0-Nightly.02-nightly.12+20260802"
-VERSION=26.5.0-Nightly.02-nightly.12+20260802: D:\a\_temp\0b60a190-7b10-4de0-861f-9a4b6d34f7ad.ps1:2
-Line |
-   2 |  VERSION="26.5.0-Nightly.02-nightly.12+20260802"
-     |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     | The term 'VERSION=26.5.0-Nightly.02-nightly.12+20260802' is not recognized as a name of a cmdlet, function,
-     | script file, or executable program. Check the spelling of the name, or if a path was included, verify that the
-     | path is correct and try again.
-Error: Process completed with exit code 1.
+❯ git add -A && git commit -m \"fix: add shell: bash to version update steps for Windows CI compatibility\" && git push origin master
+错误：路径规格 'add' 未匹配任何 Git 已知文件
+错误：路径规格 'shell:' 未匹配任何 Git 已知文件
+错误：路径规格 'bash' 未匹配任何 Git 已知文件
+错误：路径规格 'to' 未匹配任何 Git 已知文件
+错误：路径规格 'version' 未匹配任何 Git 已知文件
+错误：路径规格 'update' 未匹配任何 Git 已知文件
+错误：路径规格 'steps' 未匹配任何 Git 已知文件
+错误：路径规格 'for' 未匹配任何 Git 已知文件
+错误：路径规格 'Windows' 未匹配任何 Git 已知文件
+错误：路径规格 'CI' 未匹配任何 Git 已知文件
+错误：路径规格 'compatibility"' 未匹配任何 Git 已知文件
+
+ Deb  sha1m0furix@Sha1m0furix  ~/桌面/Kortina  on master ⇡1 +4      
