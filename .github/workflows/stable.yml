@@ -87,7 +87,9 @@ jobs:
             librsvg2-dev \
             patchelf \
             xdg-utils \
-            dpkg-dev
+            dpkg-dev \
+            rpm \
+            libfuse2
 
       - name: Install npm dependencies
         run: npm ci
@@ -149,16 +151,75 @@ jobs:
           name: kortina-stable-${{ matrix.os }}-${{ matrix.arch }}
           path: |
             Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
+            Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.rpm
             Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
-            Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
             Kortina/src-tauri/target/release/bundle/**/*.deb
+            Kortina/src-tauri/target/release/bundle/**/*.rpm
             Kortina/src-tauri/target/release/bundle/**/*.AppImage
+            Kortina/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
             Kortina/src-tauri/target/release/bundle/**/*.exe
           if-no-files-found: error
           retention-days: 365
 
+  build-flatpak:
+    needs: version
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-46
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: Kortina/package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+        working-directory: ./Kortina
+
+      - name: Update version (package.json)
+        shell: bash
+        run: |
+          VERSION="${{ needs.version.outputs.version }}"
+          jq --arg v "${VERSION}" '.version = $v' package.json > package.json.tmp && mv package.json.tmp package.json
+        working-directory: ./Kortina
+
+      - name: Update version (Cargo.toml)
+        shell: bash
+        run: |
+          VERSION="${{ needs.version.outputs.version }}"
+          sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" Cargo.toml
+        working-directory: ./Kortina/src-tauri
+
+      - name: Update version (tauri.conf.json)
+        shell: bash
+        run: |
+          VERSION="${{ needs.version.outputs.version }}"
+          jq --arg v "${VERSION}" '.version = $v' tauri.conf.json > tauri.conf.json.tmp && mv tauri.conf.json.tmp tauri.conf.json
+        working-directory: ./Kortina/src-tauri
+
+      - name: Build Flatpak
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: Kortina-${{ needs.version.outputs.version }}.flatpak
+          manifest-path: .github/flatpak/org.kairotestudio.kortina.yml
+          cache: true
+
+      - name: Upload Flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kortina-stable-flatpak
+          path: Kortina-${{ needs.version.outputs.version }}.flatpak
+          if-no-files-found: error
+          retention-days: 365
+
   release:
-    needs: [version, build]
+    needs: [version, build, build-flatpak]
     runs-on: ubuntu-latest
 
     steps:
@@ -180,8 +241,8 @@ jobs:
             **Channel:** Stable
             
             **Platforms:**
-            - Linux amd64 (.deb, .AppImage)
-            - Linux arm64 (.deb, .AppImage)
+            - Linux amd64 (.deb, .rpm, .AppImage, .flatpak)
+            - Linux arm64 (.deb, .rpm, .AppImage, .flatpak)
             - Windows amd64 (.exe)
             
             ## What's Changed
@@ -190,7 +251,7 @@ jobs:
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...v${{ needs.version.outputs.version }}
           draft: true
           prerelease: false
-          files: artifacts/**/*.{deb,AppImage,exe}
+          files: artifacts/**/*.{deb,rpm,AppImage,exe,flatpak}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

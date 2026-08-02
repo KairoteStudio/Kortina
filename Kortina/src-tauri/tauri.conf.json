@@ -30,7 +30,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "appimage", "nsis"],
+    "targets": ["deb", "appimage", "nsis", "rpm", "app"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -44,7 +44,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk5QjUxMDI4RkFGREE0NTQKUldUZFFIWGJ3V1Z1VS9yMnB6QUtTT0tuRnNaQU5KcUJHWEhNZEd6OEdNVXh0QkJsWHRvYzMK",
       "endpoints": [
-        "https://github.com/KairoteStudio/kortina/releases/download/nightly/latest-nightly.json"
+        "https://download.kairotestudio.xyz/updater/nightly.json"
       ],
       "windows": {
         "installMode": "passive"
