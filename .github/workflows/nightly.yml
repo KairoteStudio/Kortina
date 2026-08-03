@@ -210,8 +210,9 @@ jobs:
           # 复制图标（从源码目录）
           find .. -name "256x256.png" | head -1 | xargs -I{} cp {} /app/share/icons/hicolor/256x256/apps/org.kairotestudio.kortina.png 2>/dev/null || true
           
-          # 使用 flatpak-builder 打包
+          # 使用 flatpak 命令打包
           cd ..
+          flatpak build-finish build-dir --socket=x11 --socket=wayland --share=network --device=dri
           flatpak build-export repo build-dir
           flatpak build-bundle repo Kortina-nightly.flatpak org.kairotestudio.kortina
 
