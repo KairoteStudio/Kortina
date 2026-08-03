@@ -178,7 +178,15 @@ jobs:
           fi
           echo "Found deb: $DEB_FILE"
           ar x "$DEB_FILE"
-          tar -xf data.tar.xz
+          # 自动查找 data.tar.*
+          DATA_TAR=$(ls data.tar.* 2>/dev/null | head -1)
+          if [ -z "$DATA_TAR" ]; then
+            echo "No data.tar found! Contents:"
+            ls -la
+            exit 1
+          fi
+          echo "Extracting $DATA_TAR"
+          tar -xf "$DATA_TAR"
           
           # 创建 Flatpak 目录结构
           mkdir -p /app/bin /app/share/applications /app/share/icons/hicolor/256x256/apps
