@@ -145,88 +145,8 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  build-flatpak:
-    needs: [version, build]
-    runs-on: ubuntu-latest
-    container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-46
-      options: --privileged
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download Linux amd64 artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: kortina-nightly-linux-amd64
-          path: linux-build
-
-      - name: Build Flatpak
-        run: |
-          # 调试：查看下载的文件结构
-          echo "=== linux-build contents ==="
-          find linux-build -type f 2>/dev/null || ls -la linux-build/
-          
-          mkdir -p build-dir
-          cd build-dir
-          
-          # 查找并解压 deb 包
-          DEB_FILE=$(find ../linux-build -name "*.deb" | head -1)
-          if [ -z "$DEB_FILE" ]; then
-            echo "No .deb file found!"
-            exit 1
-          fi
-          echo "Found deb: $DEB_FILE"
-          ar x "$DEB_FILE"
-          # 自动查找 data.tar.*
-          DATA_TAR=$(ls data.tar.* 2>/dev/null | head -1)
-          if [ -z "$DATA_TAR" ]; then
-            echo "No data.tar found! Contents:"
-            ls -la
-            exit 1
-          fi
-          echo "Extracting $DATA_TAR"
-          tar -xf "$DATA_TAR"
-          
-          # 创建 Flatpak 目录结构
-          mkdir -p /app/bin /app/share/applications /app/share/icons/hicolor/256x256/apps
-          
-          # 复制二进制
-          cp usr/bin/kortina /app/bin/ 2>/dev/null || \
-          cp opt/kortina/bin/kortina /app/bin/ 2>/dev/null || \
-          find . -name "kortina" -type f -exec cp {} /app/bin/ \;
-          
-          # 创建 desktop 文件
-          cat > /app/share/applications/org.kairotestudio.kortina.desktop << 'EOF'
-          [Desktop Entry]
-          Name=Kortina
-          Comment=Kortina IDE
-          Exec=kortina
-          Icon=org.kairotestudio.kortina
-          Type=Application
-          Categories=Development;IDE;
-          EOF
-          
-          # 复制图标（从源码目录）
-          find .. -name "256x256.png" | head -1 | xargs -I{} cp {} /app/share/icons/hicolor/256x256/apps/org.kairotestudio.kortina.png 2>/dev/null || true
-          
-          # 使用 flatpak 命令打包
-          cd ..
-          flatpak build-init build-dir org.kairotestudio.kortina org.freedesktop.Sdk org.freedesktop.Platform 24.08
-          flatpak build-finish build-dir --socket=x11 --socket=wayland --share=network --device=dri
-          flatpak build-export repo build-dir
-          flatpak build-bundle repo Kortina-nightly.flatpak org.kairotestudio.kortina
-
-      - name: Upload Flatpak artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: kortina-nightly-flatpak
-          path: Kortina-nightly.flatpak
-          if-no-files-found: error
-          retention-days: 7
-
   release:
-    needs: [version, build, build-flatpak]
+    needs: [version, build]
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
 
@@ -249,14 +169,14 @@ jobs:
             **Channel:** Nightly
             
             **Platforms:**
-            - Linux amd64 (.deb, .rpm, .AppImage, .flatpak)
-            - Linux arm64 (.deb, .rpm, .AppImage, .flatpak)
+            - Linux amd64 (.deb, .rpm, .AppImage)
+            - Linux arm64 (.deb, .rpm, .AppImage)
             - Windows amd64 (.exe)
             
             > **Note:** Nightly builds are experimental and may contain bugs.
           draft: false
           prerelease: true
-          files: artifacts/**/*.{deb,rpm,AppImage,exe,flatpak}
+          files: artifacts/**/*.{deb,rpm,AppImage,exe}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
