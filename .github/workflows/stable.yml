@@ -228,6 +228,7 @@ jobs:
           
           # 使用 flatpak 命令打包
           cd ..
+          flatpak build-init build-dir org.kairotestudio.kortina org.freedesktop.Sdk org.freedesktop.Platform 24.08
           flatpak build-finish build-dir --socket=x11 --socket=wayland --share=network --device=dri
           flatpak build-export repo build-dir
           flatpak build-bundle repo Kortina-${{ needs.version.outputs.version }}.flatpak org.kairotestudio.kortina
