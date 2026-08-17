@@ -1,6 +1,9 @@
 .window-controls {
   display: flex;
+  align-items: center;
+  gap: 6px;
   height: 100%;
+  padding: 0 4px;
   -webkit-app-region: no-drag;
 }
 
@@ -8,53 +11,68 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
   border: none;
-  background: transparent;
-  color: var(--text-primary);
-  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 8px;
-  margin: 2px;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
 }
 
+.window-control-button svg {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  color: rgba(0, 0, 0, 0.6);
+  width: 8px;
+  height: 8px;
+}
+
+.window-control-button:hover svg {
+  opacity: 1;
+}
+
+
+.window-control-button {
+  background: #ff5f57;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+}
+
+.window-control-button:nth-child(2) {
+  background: #febc2e;
+}
+
+.window-control-button:nth-child(3) {
+  background: #28c840;
+}
+
+
 .window-control-button:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  filter: brightness(0.92);
 }
 
 .window-control-button:active {
+  filter: brightness(0.85);
   transform: scale(0.95);
-  background: var(--bg-tertiary);
-  opacity: 0.8;
 }
+
 
 .window-control-button.close:hover {
-  background: var(--bg-secondary);
-  color: #ffffff;
-}
-
-.window-control-button.close:active {
-  background: var(--bg-secondary);
-  transform: scale(0.95);
-  opacity: 0.8;
+  background: #ff5f57;
 }
 
 .window-control-button.disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
+  filter: grayscale(0.5);
 }
 
 .window-control-button.disabled:hover {
-  background: transparent;
+  filter: grayscale(0.5);
   transform: none;
-  opacity: 0.5;
 }
 
 .window-control-button.disabled:active {
-  background: transparent;
   transform: none;
-  opacity: 0.5;
 }

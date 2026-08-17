@@ -1080,56 +1080,10 @@
   border-radius: 0 0 8px 8px;
 }
 
-
-[data-theme-group="islandtheme"] .editor-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-  min-height: 40px;
-}
-
-[data-theme-group="islandtheme"] .editor-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
 [data-theme-group="islandtheme"] .dirty-indicator {
   color: var(--text-primary);
   font-size: 12px;
 }
-
-[data-theme-group="islandtheme"] .editor-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-[data-theme-group="islandtheme"] .editor-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  background-color: transparent;
-  color: var(--text-secondary);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.15s ease-out;
-}
-
-[data-theme-group="islandtheme"] .editor-action:hover {
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
 
 [data-theme-group="islandtheme"] .console-panel {
   background-color: var(--bg-secondary);

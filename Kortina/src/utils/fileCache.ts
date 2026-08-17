@@ -47,9 +47,11 @@ class FileCache {
   }
   clearPath(path: string): void {
     const normalizedPath = path.replace(/\\/g, '/');
+    const dirPrefix = `dir:${normalizedPath}`;
+    const filePrefix = `file:${normalizedPath}`;
     const keysToDelete: string[] = [];
     for (const key of this.cache.keys()) {
-      if (key.startsWith(normalizedPath)) {
+      if (key.startsWith(normalizedPath) || key.startsWith(dirPrefix) || key.startsWith(filePrefix)) {
         keysToDelete.push(key);
       }
     }

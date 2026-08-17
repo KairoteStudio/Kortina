@@ -49,10 +49,14 @@ export const useFileSystemWatcher = (options: FileSystemWatcherOptions) => {
         debounceTimerRef.current = setTimeout(async () => {
           try {
             const files = await readDirectory(targetPath, false);
+            console.log('[watcher] readDirectory', targetPath, files.map(f => f.name));
             if (!areFilesEqual(files, lastFilesRef.current)) {
               lastFilesRef.current = files;
+              console.log('[watcher] triggering onFilesChange');
               onFilesChangeRef.current?.(files);
               systemLogger.info(`文件系统变更检测: ${targetPath}, 文件数量: ${files.length}`);
+            } else {
+              console.log('[watcher] files equal, skip refresh');
             }
           } catch (error) {
             systemLogger.error(`读取目录失败: ${targetPath}, 错误: ${error}`);

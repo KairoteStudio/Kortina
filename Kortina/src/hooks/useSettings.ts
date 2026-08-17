@@ -22,6 +22,12 @@ export const useSettings = () => {
   const compilerTargetType = useUISettingsStore(s => s.compilerTargetType);
   const compilerOutputFile = useUISettingsStore(s => s.compilerOutputFile);
   const compilerShowIR = useUISettingsStore(s => s.compilerShowIR);
+  const editorBackgroundImage = useUISettingsStore(s => s.editorBackgroundImage);
+  const editorBackgroundOpacity = useUISettingsStore(s => s.editorBackgroundOpacity);
+  const globalWallpaperImage = useUISettingsStore(s => s.globalWallpaperImage);
+  const globalWallpaperOpacity = useUISettingsStore(s => s.globalWallpaperOpacity);
+  const wallpaperMode = useUISettingsStore(s => s.wallpaperMode);
+  const fleetLayout = useUISettingsStore(s => s.fleetLayout);
   const shortcuts = useUISettingsStore(s => s.shortcuts);
   const setTheme = useUISettingsStore(s => s.setTheme);
   const setThemeGroup = useUISettingsStore(s => s.setThemeGroup);
@@ -41,6 +47,12 @@ export const useSettings = () => {
   const setCompilerTargetType = useUISettingsStore(s => s.setCompilerTargetType);
   const setCompilerOutputFile = useUISettingsStore(s => s.setCompilerOutputFile);
   const setCompilerShowIR = useUISettingsStore(s => s.setCompilerShowIR);
+  const setEditorBackgroundImage = useUISettingsStore(s => s.setEditorBackgroundImage);
+  const setEditorBackgroundOpacity = useUISettingsStore(s => s.setEditorBackgroundOpacity);
+  const setGlobalWallpaperImage = useUISettingsStore(s => s.setGlobalWallpaperImage);
+  const setGlobalWallpaperOpacity = useUISettingsStore(s => s.setGlobalWallpaperOpacity);
+  const setWallpaperMode = useUISettingsStore(s => s.setWallpaperMode);
+  const setFleetLayout = useUISettingsStore(s => s.setFleetLayout);
   const setUiZoom = useUISettingsStore(s => s.setUiZoom);
   const setShortcuts = useUISettingsStore(s => s.setShortcuts);
   useEffect(() => {
@@ -85,6 +97,12 @@ export const useSettings = () => {
     compilerTargetType,
     compilerOutputFile,
     compilerShowIR,
+    editorBackgroundImage,
+    editorBackgroundOpacity,
+    globalWallpaperImage,
+    globalWallpaperOpacity,
+    wallpaperMode,
+    fleetLayout,
     shortcuts,
     setTheme,
     setThemeGroup,
@@ -104,6 +122,12 @@ export const useSettings = () => {
     setCompilerTargetType,
     setCompilerOutputFile,
     setCompilerShowIR,
+    setEditorBackgroundImage,
+    setEditorBackgroundOpacity,
+    setGlobalWallpaperImage,
+    setGlobalWallpaperOpacity,
+    setWallpaperMode,
+    setFleetLayout,
     setUiZoom,
     setShortcuts
   };

@@ -431,47 +431,42 @@
 }
 
 .status-icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: bold;
-  color: var(--bg-primary);
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .status-icon.untracked {
-  background-color: var(--text-secondary);
+  color: #2ecc71;
 }
 
 .status-icon.modified {
-  background-color: var(--bg-primary);
+  color: #f1c40f;
 }
 
 .status-icon.added {
-  background-color: var(--bg-primary);
+  color: #2ecc71;
 }
 
 .status-icon.deleted {
-  background-color: var(--bg-secondary);
+  color: #e74c3c;
 }
 
 .status-icon.staged {
-  background-color: var(--text-primary);
+  color: #4a8cff;
 }
 
 .status-icon.renamed {
-  background-color: var(--bg-primary);
+  color: #9b59b6;
 }
 
 .status-icon.copied {
-  background-color: var(--bg-primary);
+  color: #4a8cff;
 }
 
 .status-icon.conflicted {
-  background-color: var(--bg-secondary);
+  color: #e74c3c;
 }
 
 .file-name {
@@ -555,12 +550,16 @@
 }
 
 .resource-actions {
-  display: none;
+  display: flex;
   gap: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
 }
 
 .change-item:hover .resource-actions {
-  display: flex;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .resource-action-btn {

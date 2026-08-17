@@ -59,6 +59,9 @@ export class TerminalGroupService {
     this._defaultShellType = type;
     this._onDidChangeInstances.fire();
   }
+  updateAllThemes(): void {
+    this.instances.forEach(instance => instance.updateTheme());
+  }
   createGroup(instance?: ITerminalInstance): ITerminalGroup {
     const group = new TerminalGroup();
     group.onDisposed(() => this._removeGroup(group));

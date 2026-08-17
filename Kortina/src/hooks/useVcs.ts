@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { VcsService, GitStatus, GitCommit, GitBranch, GitRemote } from '../services/vcs';
+import { VcsService, GitStatus, GitCommit, GitBranch, GitDiff, GitRemote } from '../services/vcs';
 export interface VcsState {
   isRepository: boolean;
   status: GitStatus[];
@@ -280,6 +280,22 @@ export const useVcs = (projectPath: string | null) => {
       };
     }
   }, [projectPath, refreshBranches, setError]);
+  const getCommitDiff = useCallback(async (commitHash: string): Promise<GitDiff[]> => {
+    console.log('[DEBUG] getCommitDiff called', { projectPath, isRepository: state.isRepository });
+    if (!projectPath || !state.isRepository) {
+      console.log('[DEBUG] getCommitDiff early return: projectPath or isRepository is falsy');
+      return [];
+    }
+    try {
+      const result = await VcsService.getCommitDiff(projectPath, commitHash);
+      console.log('[DEBUG] VcsService.getCommitDiff result:', result);
+      return result;
+    } catch (error) {
+      console.log('[DEBUG] VcsService.getCommitDiff error:', error);
+      setError(`获取提交差异失败: ${error}`);
+      return [];
+    }
+  }, [projectPath, state.isRepository, setError]);
   const refreshRemotes = useCallback(async () => {
     if (!projectPath || !state.isRepository) return;
     try {
@@ -342,6 +358,7 @@ export const useVcs = (projectPath: string | null) => {
     fetch,
     merge,
     deleteBranch,
+    getCommitDiff,
     refreshRemotes,
     addRemote
   };

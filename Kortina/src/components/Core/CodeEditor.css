@@ -1,7 +1,30 @@
 
 .monaco-editor {
-  
-  
+  background-color: transparent !important;
+}
+
+.monaco-editor .overflow-guard {
+  background-color: transparent !important;
+}
+
+.monaco-editor .monaco-editor-background {
+  background-color: transparent !important;
+}
+
+.monaco-editor .view-lines {
+  background-color: transparent !important;
+}
+
+.monaco-editor .view-line {
+  background-color: transparent !important;
+}
+
+.monaco-editor .margin {
+  background-color: transparent !important;
+}
+
+.monaco-editor .minimap {
+  background-color: transparent !important;
 }
 
 
@@ -44,6 +67,10 @@
   z-index: 1;
 }
 
+.code-editor-container.has-background-image {
+  background-color: transparent !important;
+}
+
 
 .code-editor-container .status-bar,
 .code-editor-container .code-editor-status-bar {
@@ -71,6 +98,15 @@
   background: var(--bg-tertiary) !important;
   border-radius: 10px !important;
   transition: background 0.2s;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+.monaco-editor .scrollbar .slider::before {
+  display: none !important;
+  content: none !important;
 }
 
 .monaco-editor .scrollbar .slider:hover {

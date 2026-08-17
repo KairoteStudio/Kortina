@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useEditorStore, useCompileStore, useTerminalStore, useUISettingsStore } from '../stores';
 import { AppEvents, type CompileOptionsResultPayload } from '../events/app-events';
+import { isMobile } from '../utils/environment';
 import type { CompileError } from '../types/app';
 export interface UseCompilerOptions {
   isTauri: boolean;
@@ -171,6 +172,19 @@ export const useCompiler = ({
   }, [isTauri, tabs, activeTab, saveCurrentFile, invokeKairoteCompiler, setIsCompiling, setIsTerminalOpen, setCompileOutput, setCompileErrors]);
   const openCompileOptionsWindow = useCallback(async () => {
     if (!isTauri) return;
+    if (isMobile()) {
+      
+      const {
+        emit
+      } = await import('@tauri-apps/api/event');
+      await emit<CompileOptionsResultPayload>(AppEvents.COMPILE_OPTIONS_RESULT, {
+        compilerTargetType,
+        compilerOutputFile,
+        compilerShowIR,
+        confirmed: true
+      });
+      return;
+    }
     try {
       const {
         invoke

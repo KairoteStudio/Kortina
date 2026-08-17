@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Minus, Square, X } from 'lucide-react';
 import type { Window as TauriWindow } from '@tauri-apps/api/window';
-import { isTauri } from '../../utils/environment';
+import { isTauri, isMobile } from '../../utils/environment';
 import './WindowControls.css';
 let appWindow: TauriWindow | null = null;
 export const WindowControls: React.FC = () => {
@@ -99,11 +99,14 @@ export const WindowControls: React.FC = () => {
       console.error('Failed to close window:', error);
     }
   };
-  if (!isTauriEnv) {
-    console.log('Not in Tauri environment, hiding window controls');
+  if (!isTauriEnv || isMobile()) {
+    console.log('Not in Tauri environment or mobile, hiding window controls');
     return null;
   }
   return <div className="window-controls">
+      <div className={`window-control-button close ${!isTauriReady ? 'disabled' : ''}`} onClick={isTauriReady ? close : undefined} title="关闭">
+        <X size={16} />
+      </div>
       <div className={`window-control-button ${!isTauriReady ? 'disabled' : ''}`} onClick={isTauriReady ? minimize : undefined} title="最小化">
         <Minus size={16} />
       </div>
@@ -127,9 +130,6 @@ export const WindowControls: React.FC = () => {
           backgroundColor: 'var(--bg-secondary)'
         }} />
           </div> : <Square size={12} />}
-      </div>
-      <div className={`window-control-button close ${!isTauriReady ? 'disabled' : ''}`} onClick={isTauriReady ? close : undefined} title="关闭">
-        <X size={16} />
       </div>
     </div>;
 };

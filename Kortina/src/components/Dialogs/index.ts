@@ -1,5 +1,6 @@
 export { default as BranchInputDialog } from './BranchInputDialog';
 export { default as CloneHistoryDialog } from './CloneHistoryDialog';
+export { default as FileBrowserDialog } from './FileBrowserDialog';
 export { default as GitCloneDialog } from './GitCloneDialog';
 export { default as InputDialogWindow } from './InputDialogWindow';
 export { default as PathSelectDialog } from './PathSelectDialog';

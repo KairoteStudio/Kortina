@@ -66,6 +66,7 @@
 .panel-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 12px;
 }
 
@@ -236,7 +237,6 @@
 }
 
 .option-checkbox input:checked + span {
-  color: var(--text-primary);
   font-weight: 600;
 }
 

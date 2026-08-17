@@ -5,6 +5,7 @@ import { KortinaLogo } from '../KortinaLogo';
 import { useUiZoomSync } from '../../../hooks/useUiZoomSync';
 import { useProjectStore } from '../../../stores';
 import { AppEvents, type OpenFolderPayload, type SwitchProjectPayload, type OpenSettingsPayload } from '../../../events/app-events';
+import { isMobile } from '../../../utils/environment';
 import './WelcomeWindow.css';
 export const WelcomeWindow: React.FC = () => {
   const {
@@ -78,14 +79,26 @@ export const WelcomeWindow: React.FC = () => {
   }, []);
   const handleOpenFolder = async () => {
     try {
-      const {
-        open
-      } = await import('@tauri-apps/plugin-dialog');
-      const selected = await open({
-        directory: true,
-        multiple: false,
-        title: '打开项目文件夹'
-      });
+      let selected: string | null = null;
+      if (isMobile()) {
+        const { invoke } = await import('@tauri-apps/api/core');
+        const result = await invoke<string | null>('open_folder_picker_android');
+        if (result) {
+          selected = result;
+        }
+      } else {
+        const {
+          open
+        } = await import('@tauri-apps/plugin-dialog');
+        const result = await open({
+          directory: true,
+          multiple: false,
+          title: '打开项目文件夹'
+        });
+        if (result && typeof result === 'string') {
+          selected = result;
+        }
+      }
       if (selected) {
         const {
           emit

@@ -6,6 +6,7 @@ interface FileTreeProps {
   files: FileItem[];
   projectRootPath: string;
   expandedDirs: Set<string>;
+  loadedDirs: Set<string>;
   selectedPaths: Set<string>;
   onToggleDirectory: (file: FileItem) => void;
   onFileClick: (file: FileItem, event: React.MouseEvent) => void;
@@ -25,6 +26,7 @@ const FileTree: React.FC<FileTreeProps> = ({
   files,
   projectRootPath,
   expandedDirs,
+  loadedDirs,
   selectedPaths,
   onToggleDirectory,
   onFileClick,
@@ -44,8 +46,9 @@ const FileTree: React.FC<FileTreeProps> = ({
     const tooLong = isFileTooLong(item.name);
     const isDirectory = item.type === 'directory';
     const isSelected = selectedPaths.has(item.path);
-    const hasChildren = isDirectory && (item.children && item.children.length > 0 || item.children === undefined || item.children && item.children.length === 0);
+    const hasChildren = isDirectory;
     const canShowChildren = isDirectory && item.children !== undefined;
+    const childrenLoaded = loadedDirs.has(item.path);
     return <div key={item.path} className={`file-tree-item ${isExpanded ? 'expanded' : ''}`}>
         <div className={`file-item ${item.type} ${tooLong ? 'long-name' : ''} ${hasChildren ? 'has-children' : ''} ${isSelected ? 'selected' : ''}`} data-path={item.path} aria-selected={isSelected} style={{
         paddingLeft: `${depth * TREE_INDENT + TREE_BASE_PAD}px`
@@ -71,7 +74,7 @@ const FileTree: React.FC<FileTreeProps> = ({
           </span>
         </div>
 
-        {canShowChildren && <CollapsibleChildren open={isExpanded} className="file-children collapsible-children" innerClassName="file-children-inner collapsible-children-inner">
+        {canShowChildren && <CollapsibleChildren key={`${item.path}-children`} open={isExpanded} className="file-children collapsible-children" innerClassName="file-children-inner collapsible-children-inner">
             {item.children && item.children.length > 0 ? item.children.map((child: FileItem, index: number) => {
           const isLastChild = index === item.children!.length - 1;
           const hasNextSibling = !isLastChild;
@@ -79,14 +82,18 @@ const FileTree: React.FC<FileTreeProps> = ({
           return <React.Fragment key={child.path}>
                     {renderFileItem(child, depth + 1, hasNextSibling, childAncestorIndicators)}
                   </React.Fragment>;
-        }) : <div className="empty-folder" style={{
-          paddingLeft: `${(depth + 1) * TREE_INDENT + TREE_BASE_PAD + 16}px`
-        }}>
+        }) : childrenLoaded ? <div className="empty-folder" style={{
+        paddingLeft: `${(depth + 1) * TREE_INDENT + TREE_BASE_PAD + 16}px`
+      }}>
                 <span className="empty-text">空文件夹</span>
+              </div> : <div className="empty-folder loading" style={{
+        paddingLeft: `${(depth + 1) * TREE_INDENT + TREE_BASE_PAD + 16}px`
+      }}>
+                <span className="empty-text">加载中...</span>
               </div>}
           </CollapsibleChildren>}
       </div>;
-  }, [expandedDirs, selectedPaths, onToggleDirectory, onFileClick, onFileContextMenu, onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop, onFileMouseEnter, onFileMouseLeave]);
+  }, [expandedDirs, loadedDirs, selectedPaths, onToggleDirectory, onFileClick, onFileContextMenu, onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop, onFileMouseEnter, onFileMouseLeave]);
   if (isLoading) {
     return <div className="loading-state">
         <div className="spinning-icon">

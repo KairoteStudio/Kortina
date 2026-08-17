@@ -1,5 +1,6 @@
 import React from 'react';
 import { Select } from '../Select';
+import { Slider } from '../Slider';
 interface SettingsEditorProps {
   tempFontSize: number;
   setTempFontSize: (size: number) => void;
@@ -19,6 +20,10 @@ interface SettingsEditorProps {
   setTempShowMinimap: (show: boolean) => void;
   tempEnableCodeLens: boolean;
   setTempEnableCodeLens: (enable: boolean) => void;
+  tempEditorBackgroundImage: string;
+  setTempEditorBackgroundImage: (path: string) => void;
+  tempEditorBackgroundOpacity: number;
+  setTempEditorBackgroundOpacity: (opacity: number) => void;
 }
 export const SettingsEditor: React.FC<SettingsEditorProps> = ({
   tempFontSize,
@@ -38,8 +43,12 @@ export const SettingsEditor: React.FC<SettingsEditorProps> = ({
   tempShowMinimap,
   setTempShowMinimap,
   tempEnableCodeLens,
-  setTempEnableCodeLens
-}) => <div className="settings-scroll-container">
+  setTempEnableCodeLens,
+  tempEditorBackgroundImage,
+  tempEditorBackgroundOpacity,
+  setTempEditorBackgroundOpacity
+}) => {
+  return <div className="settings-scroll-container">
     <div className="setting-item">
       <div className="setting-info">
         <span className="setting-name">字体大小</span>
@@ -208,4 +217,26 @@ export const SettingsEditor: React.FC<SettingsEditorProps> = ({
         </label>
       </div>
     </div>
+
+    {tempEditorBackgroundImage && (
+      <div className="setting-item">
+        <div className="setting-info">
+          <span className="setting-name">背景透明度</span>
+          <span className="setting-description">调整背景图片的透明度 ({tempEditorBackgroundOpacity}%)</span>
+        </div>
+        <div className="setting-control">
+          <Slider
+            min={5}
+            max={50}
+            step={1}
+            value={tempEditorBackgroundOpacity}
+            onChange={setTempEditorBackgroundOpacity}
+            formatValue={(v: number) => `${v}%`}
+            ariaLabel="背景透明度"
+            width={120}
+          />
+        </div>
+      </div>
+    )}
   </div>;
+};

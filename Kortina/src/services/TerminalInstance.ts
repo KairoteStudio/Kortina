@@ -48,7 +48,10 @@ function getCssVariable(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 function getTerminalColors(isDark: boolean) {
-  const bgPrimary = getCssVariable('--bg-primary') || (isDark ? '#1e1e1e' : '#ffffff');
+  
+  const isFleetTheme = document.documentElement.getAttribute('data-theme-group') === 'fleet';
+  const fleetEditor = getCssVariable('--fleet-editor');
+  const bgPrimary = isFleetTheme && fleetEditor ? fleetEditor : (getCssVariable('--bg-primary') || (isDark ? '#1e1e1e' : '#ffffff'));
   const textPrimary = getCssVariable('--text-primary') || (isDark ? '#cccccc' : '#212529');
   const textSecondary = getCssVariable('--text-secondary') || (isDark ? '#969696' : '#6c757d');
   if (isDark) {

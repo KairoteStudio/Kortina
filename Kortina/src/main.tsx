@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './assets/fonts.css';
 import './styles.css';
 import './themes/island-theme.css';
+import './themes/fleet-theme.css';
 import App from './App.tsx';
 import { loadFontFamily } from './utils/fontLoader.ts';
 const query = new URLSearchParams(window.location.search);
@@ -19,13 +20,13 @@ function getStoredTheme(): 'light' | 'dark' {
   } catch (e) {}
   return 'dark';
 }
-function getStoredThemeGroup(): 'default' | 'islandtheme' {
+function getStoredThemeGroup(): 'default' | 'islandtheme' | 'fleet' {
   try {
     const raw = window.localStorage.getItem('kortina_settings_v3');
     if (raw) {
       const parsed = JSON.parse(raw);
       const state = parsed && parsed.state ? parsed.state : parsed;
-      if (state?.themeGroup === 'islandtheme' || state?.themeGroup === 'default') {
+      if (state?.themeGroup === 'islandtheme' || state?.themeGroup === 'default' || state?.themeGroup === 'fleet') {
         return state.themeGroup;
       }
     }

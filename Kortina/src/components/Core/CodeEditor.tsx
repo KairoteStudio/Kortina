@@ -1,5 +1,6 @@
 import '../../monaco-setup';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { readFile } from '@tauri-apps/plugin-fs';
 import Editor, { Monaco } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 import type { editor } from 'monaco-editor';
@@ -9,6 +10,8 @@ import MonacoPreloader from './MonacoPreloader';
 import { useBreakpointDecorations } from '../../hooks/useBreakpointDecorations';
 import { useDebugStore } from '../../stores/DebugStore';
 import { debugService } from '../../services/DebugService';
+import { isMobile } from '../../utils/environment';
+
 import './CodeEditor.css';
 interface CodeEditorProps {
   content: string;
@@ -33,6 +36,8 @@ interface CodeEditorProps {
   onFind?: () => void;
   onReplace?: () => void;
   currentFilePath?: string;
+  backgroundImage?: string;
+  backgroundOpacity?: number;
 }
 export const CodeEditor: React.FC<CodeEditorProps> = ({
   content,
@@ -56,19 +61,82 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   onSelectAll,
   onFind,
   onReplace,
-  currentFilePath
+  currentFilePath,
+  backgroundImage = '',
+  backgroundOpacity = 15
 }) => {
   const editorRef = useRef<MonacoEditorInstance | null>(null);
+  const [dataImageUrl, setDataImageUrl] = useState<string>('');
+  
+  useEffect(() => {
+    if (!backgroundImage) {
+      setDataImageUrl('');
+      return;
+    }
+
+    async function loadImageAsDataUrl() {
+      try {
+        if (backgroundImage.startsWith('data:') || backgroundImage.startsWith('http')) {
+          setDataImageUrl(backgroundImage);
+          return;
+        }
+
+        console.log('[CodeEditor] Loading background image from path:', backgroundImage);
+
+        const uint8Array = await readFile(backgroundImage);
+        
+        let mimeType = 'image/png';
+        if (backgroundImage.endsWith('.jpg') || backgroundImage.endsWith('.jpeg')) {
+          mimeType = 'image/jpeg';
+        } else if (backgroundImage.endsWith('.gif')) {
+          mimeType = 'image/gif';
+        } else if (backgroundImage.endsWith('.webp')) {
+          mimeType = 'image/webp';
+        }
+
+        let binaryString = '';
+        const chunkSize = 8192;
+        for (let i = 0; i < uint8Array.length; i += chunkSize) {
+          const chunk = uint8Array.slice(i, Math.min(i + chunkSize, uint8Array.length));
+          binaryString += String.fromCharCode(...chunk);
+        }
+        const base64 = btoa(binaryString);
+        const dataUrl = `data:${mimeType};base64,${base64}`;
+        
+        console.log('[CodeEditor] Successfully loaded image as data URL, length:', dataUrl.length);
+        setDataImageUrl(dataUrl);
+      } catch (error) {
+        console.error('[CodeEditor] Failed to load background image:', error);
+        setDataImageUrl('');
+      }
+    }
+
+    loadImageAsDataUrl();
+  }, [backgroundImage]);
+
+  useEffect(() => {
+    console.log('[CodeEditor] Background image state:', {
+      hasOriginalPath: !!backgroundImage,
+      originalPath: backgroundImage,
+      hasDataUrl: !!dataImageUrl,
+      dataUrlLength: dataImageUrl?.length || 0,
+      opacity: backgroundOpacity
+    });
+  }, [backgroundImage, dataImageUrl, backgroundOpacity]);
   const monacoRef = useRef<Monaco | null>(null);
   const [cursorPosition, setCursorPosition] = useState({
     line: 1,
     column: 1
   });
   const [isEditorReady, setIsEditorReady] = useState(false);
+  const [showGutterHighlight, setShowGutterHighlight] = useState(true);
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
   } | null>(null);
+  const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
+  const LONG_PRESS_DURATION = 600;
   useBreakpointDecorations(editorRef, monacoRef, currentFilePath || null);
   const {
     stoppedFile,
@@ -178,7 +246,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     fontFamily,
     fontLigatures,
     tabSize,
-    wordWrap: 'on',
+    wordWrap: 'off',
     lineHeight: Math.ceil(fontSize * 1.6),
     mouseWheelZoom: false,
     letterSpacing: 0.3,
@@ -318,8 +386,63 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       overflowWidgetsDomNode: overflowWidgetsContainer,
       contextmenu: false
     } as any);
+    const editorDomNode = editor.getDomNode();
+    if (editorDomNode) {
+      editorDomNode.style.backgroundColor = 'transparent';
+    }
     const editorContainer = editor.getContainerDomNode();
     editorContainer.addEventListener('contextmenu', handleContextMenu);
+    const isMobileEnv = isMobile();
+    let touchCleanup: (() => void) | null = null;
+    if (isMobileEnv) {
+      const handleTouchStart = (e: TouchEvent) => {
+        if (e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        touchStartPosRef.current = { x: touch.clientX, y: touch.clientY };
+        if (touchTimerRef.current) clearTimeout(touchTimerRef.current);
+        touchTimerRef.current = setTimeout(() => {
+          touchStartPosRef.current = null;
+          setContextMenu({ x: touch.clientX, y: touch.clientY });
+        }, LONG_PRESS_DURATION);
+      };
+      const handleTouchMove = (e: TouchEvent) => {
+        if (!touchStartPosRef.current || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartPosRef.current.x;
+        const dy = touch.clientY - touchStartPosRef.current.y;
+        if (Math.sqrt(dx * dx + dy * dy) > 10) {
+          if (touchTimerRef.current) {
+            clearTimeout(touchTimerRef.current);
+            touchTimerRef.current = null;
+          }
+          touchStartPosRef.current = null;
+        }
+      };
+      const handleTouchEnd = () => {
+        if (touchTimerRef.current) {
+          clearTimeout(touchTimerRef.current);
+          touchTimerRef.current = null;
+        }
+        touchStartPosRef.current = null;
+      };
+      const handleTouchCancel = () => {
+        if (touchTimerRef.current) {
+          clearTimeout(touchTimerRef.current);
+          touchTimerRef.current = null;
+        }
+        touchStartPosRef.current = null;
+      };
+      editorContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+      editorContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+      editorContainer.addEventListener('touchend', handleTouchEnd);
+      editorContainer.addEventListener('touchcancel', handleTouchCancel);
+      touchCleanup = () => {
+        editorContainer.removeEventListener('touchstart', handleTouchStart);
+        editorContainer.removeEventListener('touchmove', handleTouchMove);
+        editorContainer.removeEventListener('touchend', handleTouchEnd);
+        editorContainer.removeEventListener('touchcancel', handleTouchCancel);
+      };
+    }
     editor.updateOptions({
       ...editorOptions,
       fontSize,
@@ -349,6 +472,15 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         column: e.position.column
       });
       propsRef.current.onCursorChange(e.position.lineNumber, e.position.column);
+    });
+    
+    editor.onDidChangeCursorSelection((e: monaco.editor.ICursorSelectionChangedEvent) => {
+      const selection = e.selection;
+      const isMultiLine = selection.startLineNumber !== selection.endLineNumber;
+      const isCursorAtLineStart = e.selection.positionColumn === 1;
+      
+      const shouldShowGutter = !(isMultiLine && !isCursorAtLineStart);
+      setShowGutterHighlight(shouldShowGutter);
     });
     let suggestTimeout: ReturnType<typeof setTimeout>;
     editor.onDidChangeModelContent((event: monaco.editor.IModelContentChangedEvent) => {
@@ -398,6 +530,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     return () => {
       hoverProviderDispose.dispose();
       editorContainer.removeEventListener('contextmenu', handleContextMenu);
+      if (touchCleanup) touchCleanup();
+      if (touchTimerRef.current) {
+        clearTimeout(touchTimerRef.current);
+        touchTimerRef.current = null;
+      }
       if (suggestTimeout) clearTimeout(suggestTimeout);
     };
   }, [theme, syntaxTheme, language, fontSize, tabSize, fontFamily, fontLigatures, onEditorReady, handleContextMenu, externalMonaco, editorOptions]);
@@ -407,9 +544,25 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         const editorContainer = editorRef.current.getContainerDomNode();
         editorContainer.removeEventListener('contextmenu', handleContextMenu);
       }
+      if (touchTimerRef.current) {
+        clearTimeout(touchTimerRef.current);
+        touchTimerRef.current = null;
+      }
     };
   }, [handleContextMenu]);
-  return <div className="code-editor-container" style={{
+
+  
+  useEffect(() => {
+    if (!editorRef.current) return;
+    const editorDom = editorRef.current.getDomNode();
+    if (showGutterHighlight) {
+      editorDom.classList.remove('hide-gutter-highlight');
+    } else {
+      editorDom.classList.add('hide-gutter-highlight');
+    }
+    console.log('[CodeEditor] showGutterHighlight:', showGutterHighlight, 'class applied:', editorDom.classList.contains('hide-gutter-highlight'));
+  }, [showGutterHighlight]);
+  return <div className={`code-editor-container ${dataImageUrl ? 'has-background-image' : ''}`} style={{
     height: '100%',
     width: '100%',
     display: 'flex',
@@ -427,7 +580,20 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       overflow: 'hidden',
       position: 'relative'
     }}>
-        {!isEditorReady && <div style={{
+        {dataImageUrl && <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `url("${dataImageUrl}")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: backgroundOpacity / 100,
+          zIndex: 0,
+          pointerEvents: 'none'
+        }} />}
+        {!isEditorReady && !dataImageUrl && <div style={{
         position: 'absolute',
         inset: 0,
         display: 'flex',
@@ -439,14 +605,16 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       }}>
             <div>正在加载编辑器...</div>
           </div>}
-        <Editor height="100%" language={language === 'kairote' ? 'kairote' : language} value={content} theme={getEditorTheme()} onChange={handleEditorChange} onMount={handleEditorDidMount} loading={<div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        backgroundColor: 'var(--bg-primary)',
-        color: 'var(--text-primary)'
-      }}>正在加载编辑器...</div>} options={editorOptions} />
+        <div style={{ position: 'relative', zIndex: 1, height: '100%' }}>
+          <Editor height="100%" language={language === 'kairote' ? 'kairote' : language} value={content} theme={getEditorTheme()} onChange={handleEditorChange} onMount={handleEditorDidMount} loading={<div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+          backgroundColor: 'var(--bg-primary)',
+          color: 'var(--text-primary)'
+        }}>正在加载编辑器...</div>} options={editorOptions} />
+        </div>
       </div>
       <div className="status-bar code-editor-status-bar" style={{
       display: 'flex',

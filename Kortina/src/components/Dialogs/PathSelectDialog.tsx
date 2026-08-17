@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { DialogShell, FormField, DialogActions } from './primitives';
+import { isMobile } from '../../utils/environment';
 import './Dialogs.css';
 interface PathSelectDialogProps {
   isOpen: boolean;
@@ -31,6 +32,21 @@ export const PathSelectDialog: React.FC<PathSelectDialogProps> = ({
     }
   }, [isOpen, defaultPath]);
   const handleBrowse = async () => {
+    if (isMobile()) {
+      try {
+        setIsLoading(true);
+        const result = await invoke<string | null>('open_folder_picker_android');
+        if (result) {
+          setPath(result);
+        }
+      } catch (error) {
+        console.error('选择文件夹失败:', error);
+        setError('选择文件夹失败，请重试');
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
     try {
       setIsLoading(true);
       const selectedPath = await invoke<string>('show_folder_dialog', {
