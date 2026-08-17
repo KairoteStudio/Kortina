@@ -1,7 +1,7 @@
 import React from 'react';
 import { VcsPanel } from '../../../Vcs/VcsPanel';
 import { useUISettingsStore } from '../../../../stores';
-import { isTauri } from '../../../../utils/environment';
+import { isTauri, isMobile } from '../../../../utils/environment';
 import './PanelStyles.css';
 interface GitPanelProps {
   projectPath: string | null;
@@ -17,7 +17,7 @@ export const GitPanel: React.FC<GitPanelProps> = ({
     theme
   } = useUISettingsStore();
   const handleOpenInWindow = async () => {
-    if (!isTauri()) {
+    if (!isTauri() || isMobile()) {
       alert('窗口模式仅在桌面应用中可用');
       return;
     }

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useUISettingsStore, useProjectStore } from '../stores';
 import { AppEvents, type SettingsChangedPayload, type SwitchProjectPayload } from '../events/app-events';
+import { isMobile } from '../utils/environment';
+import { terminalGroupService } from '../services/TerminalGroupService';
 export interface UseAppBootstrapOptions {
   isTauri: boolean;
   projectExplorerRef: React.RefObject<{
@@ -25,10 +27,14 @@ export const useAppBootstrap = ({
   useEffect(() => {
     const resolvedTheme = theme === 'light' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', resolvedTheme);
+    
+    terminalGroupService.updateAllThemes();
   }, [theme]);
   useEffect(() => {
-    const group = themeGroup === 'islandtheme' ? 'islandtheme' : 'default';
+    const group = themeGroup === 'islandtheme' ? 'islandtheme' : themeGroup === 'fleet' ? 'fleet' : 'default';
     document.documentElement.setAttribute('data-theme-group', group);
+    
+    terminalGroupService.updateAllThemes();
   }, [themeGroup]);
   useEffect(() => {
     if (!isTauri) return;
@@ -119,7 +125,7 @@ export const useAppBootstrap = ({
     };
   }, [loadRecentProjectsWrapped, scheduleIdle]);
   const openSettingsWindow = useCallback(async (initialCategory?: string) => {
-    if (!isTauri) {
+    if (!isTauri || isMobile()) {
       setSettingsWindowOpen(true, initialCategory as any || 'general');
       return;
     }

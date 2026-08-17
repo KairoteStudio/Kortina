@@ -311,6 +311,27 @@ pub async fn git_diff(
     Ok(diffs)
 }
 
+pub async fn git_commit_diff(
+    repo_path: String,
+    commit_hash: String,
+) -> Result<Vec<GitDiff>, String> {
+    let args = vec!["--no-pager", "show", "--unified=3", "--no-color", "--pretty=format:", &commit_hash];
+
+    let output = execute_git_command(&args, &repo_path).await?;
+
+    if !output.status.success() {
+        return Err(format!(
+            "获取提交差异失败: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let diffs = parse_diff_output(&stdout);
+
+    Ok(diffs)
+}
+
 pub async fn git_push(
     repo_path: String,
     remote: Option<String>,
@@ -737,7 +758,12 @@ fn parse_diff_output(diff_output: &str) -> Vec<GitDiff> {
 fn extract_file_path_from_diff_header(header: &str) -> String {
     let parts: Vec<&str> = header.split_whitespace().collect();
     if parts.len() >= 4 {
-        parts[3].to_string().trim_start_matches("a/").to_string()
+        let path = parts[3];
+        if path.starts_with("b/") {
+            path[2..].to_string()
+        } else {
+            path.to_string()
+        }
     } else {
         "unknown".to_string()
     }

@@ -40,6 +40,7 @@ commands.allow = [
   "vcs_checkout",
   "vcs_create_branch",
   "vcs_diff",
+  "vcs_commit_diff",
   "vcs_push",
   "vcs_pull",
   "vcs_fetch",

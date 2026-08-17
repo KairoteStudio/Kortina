@@ -7,6 +7,7 @@ import { AppEvents, type VcsActionTriggerPayload, type OpenFolderPayload } from 
 import type { MonacoEditorInstance } from '../types/editor';
 import { showErrorToast, showInfoToast, showSuccessToast, showWarningToast } from '../utils/toastService';
 import { VcsService } from '../services/vcs';
+import { isMobile } from '../utils/environment';
 interface UseAppActionsOptions {
   isTauri: boolean;
   editorRef: React.RefObject<MonacoEditorInstance | null>;
@@ -412,15 +413,27 @@ export const useAppActions = (options: UseAppActionsOptions) => {
   const handleOpenFolder = useCallback(async () => {
     try {
       if (isTauri) {
-        const {
-          open
-        } = await import('@tauri-apps/plugin-dialog');
-        const selected = await open({
-          directory: true,
-          multiple: false,
-          title: '打开项目文件夹'
-        });
-        if (selected && typeof selected === 'string') {
+        let selected: string | null = null;
+        if (isMobile()) {
+          const { invoke } = await import('@tauri-apps/api/core');
+          const result = await invoke<string | null>('open_folder_picker_android');
+          if (result) {
+            selected = result;
+          }
+        } else {
+          const {
+            open
+          } = await import('@tauri-apps/plugin-dialog');
+          const result = await open({
+            directory: true,
+            multiple: false,
+            title: '打开项目文件夹'
+          });
+          if (result && typeof result === 'string') {
+            selected = result;
+          }
+        }
+        if (selected) {
           const {
             emit
           } = await import('@tauri-apps/api/event');

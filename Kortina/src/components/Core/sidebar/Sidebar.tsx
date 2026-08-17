@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Settings, GitBranch, Layers, Terminal, ChevronRight, ChevronLeft, Search, Bug, PanelTop } from 'lucide-react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { Settings, GitBranch, Layers, Terminal, ChevronRight, ChevronLeft, Search, Bug, PanelTop, Menu, X, History } from 'lucide-react';
 import { KortinaLogo } from '../KortinaLogo';
 import { pluginManager } from '../../../plugins/PluginManager';
 import type { PanelContribution } from '../../../plugins/index';
 import { toPluginPanelViewId } from '../../../plugins/PluginPanelHost';
+import { isMobile } from '../../../utils/environment';
 import './Sidebar.css';
 interface SidebarProps {
   width: number;
@@ -28,6 +29,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSettingsToggle
 }) => {
   const [pluginPanels, setPluginPanels] = useState<PanelContribution[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobile = useMemo(() => isMobile(), []);
   useEffect(() => {
     const refresh = () => {
       setPluginPanels(pluginManager.getContributionRenderer().getPanelContributions());
@@ -55,6 +58,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     icon: GitBranch,
     label: '版本控制'
   }, {
+    id: 'history',
+    icon: History,
+    label: '历史'
+  }, {
     id: 'debug',
     icon: Bug,
     label: '调试'
@@ -70,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     label: '设置',
     isToggle: true
   }];
-  const handleMenuClick = (item: {
+  const handleMenuClick = useCallback((item: {
     id: string;
     isToggle?: boolean;
   }) => {
@@ -81,7 +88,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     } else if (!item.isToggle) {
       onViewChange(item.id);
     }
-  };
+    if (mobile) {
+      setMobileMenuOpen(false);
+    }
+  }, [mobile, onTerminalToggle, onSettingsToggle, onViewChange]);
+  const handlePluginClick = useCallback((viewId: string) => {
+    onViewChange(viewId);
+    if (mobile) {
+      setMobileMenuOpen(false);
+    }
+  }, [mobile, onViewChange]);
   const isBottomItemActive = (itemId: string): boolean => {
     if (itemId === 'terminal' && isTerminalOpen) {
       return true;
@@ -94,6 +110,68 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const sidebarStyle = useMemo(() => ({
     '--sidebar-width': `${width}px`
   }) as React.CSSProperties, [width, isCollapsed]);
+
+  
+  if (mobile) {
+    return <>
+      <button
+        className="mobile-sidebar-toggle"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-label={mobileMenuOpen ? '关闭菜单' : '打开菜单'}
+      >
+        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </button>
+      {mobileMenuOpen && <div className="mobile-sidebar-overlay" onClick={() => setMobileMenuOpen(false)} />}
+      <div className={`sidebar mobile ${mobileMenuOpen ? 'open' : 'collapsed'} ${isCollapsed ? 'collapsed' : ''}`} style={sidebarStyle}>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <KortinaLogo size={18} />
+            <span className="sidebar-title">Kortina</span>
+          </div>
+          <button className="sidebar-toggle" onClick={() => setMobileMenuOpen(false)} title="关闭">
+            <X size={16} />
+          </button>
+        </div>
+
+        <nav className="sidebar-nav">
+          {mainMenuItems.map(item => {
+            const Icon = item.icon;
+            const isActive = currentView === item.id;
+            return <button key={item.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onClick={() => handleMenuClick(item)} title={item.label}>
+                <Icon size={20} />
+                <span className="sidebar-item-label">{item.label}</span>
+                {isActive && <ChevronRight size={14} className="sidebar-indicator" />}
+              </button>;
+          })}
+
+          {pluginPanels.length > 0 && <div className="sidebar-plugin-section">
+              <div className="sidebar-section-label">插件面板</div>
+              {pluginPanels.map(panel => {
+                const viewId = toPluginPanelViewId(panel.id);
+                const isActive = currentView === viewId;
+                return <button key={panel.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onClick={() => handlePluginClick(viewId)} title={panel.name}>
+                    <PanelTop size={20} />
+                    <span className="sidebar-item-label">{panel.name}</span>
+                    {isActive && <ChevronRight size={14} className="sidebar-indicator" />}
+                  </button>;
+              })}
+            </div>}
+        </nav>
+
+        <div className="sidebar-footer">
+          {bottomMenuItems.map(item => {
+            const Icon = item.icon;
+            const isActive = isBottomItemActive(item.id);
+            return <button key={item.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onClick={() => handleMenuClick(item)} title={item.label}>
+                <Icon size={20} />
+                <span className="sidebar-item-label">{item.label}</span>
+              </button>;
+          })}
+        </div>
+      </div>
+    </>;
+  }
+
   return <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`} style={sidebarStyle}>
       <div className="sidebar-header">
         {!isCollapsed && <div className="sidebar-logo">
@@ -104,12 +182,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
       </div>
-      
+
       <nav className="sidebar-nav">
         {mainMenuItems.map(item => {
         const Icon = item.icon;
         const isActive = currentView === item.id;
-        return <button key={item.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onMouseDown={() => handleMenuClick(item)} title={item.label}>
+        return <button key={item.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onClick={() => handleMenuClick(item)} title={item.label}>
               <Icon size={18} />
               {!isCollapsed && <span className="sidebar-item-label">{item.label}</span>}
               {!isCollapsed && isActive && <ChevronRight size={14} className="sidebar-indicator" />}
@@ -121,7 +199,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {pluginPanels.map(panel => {
           const viewId = toPluginPanelViewId(panel.id);
           const isActive = currentView === viewId;
-          return <button key={panel.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onMouseDown={() => onViewChange(viewId)} title={panel.name}>
+          return <button key={panel.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onClick={() => handlePluginClick(viewId)} title={panel.name}>
                   <PanelTop size={18} />
                   {!isCollapsed && <span className="sidebar-item-label">{panel.name}</span>}
                   {!isCollapsed && isActive && <ChevronRight size={14} className="sidebar-indicator" />}
@@ -134,7 +212,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {bottomMenuItems.map(item => {
         const Icon = item.icon;
         const isActive = isBottomItemActive(item.id);
-        return <button key={item.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onMouseDown={() => handleMenuClick(item)} title={item.label}>
+        return <button key={item.id} className={`sidebar-item ${isActive ? 'active' : ''}`} onClick={() => handleMenuClick(item)} title={item.label}>
               <Icon size={18} />
               {!isCollapsed && <span className="sidebar-item-label">{item.label}</span>}
             </button>;

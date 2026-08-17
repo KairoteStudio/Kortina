@@ -106,6 +106,12 @@ export class VcsService {
       filePath
     });
   }
+  static async getCommitDiff(repoPath: string, commitHash: string): Promise<GitDiff[]> {
+    return await invoke<GitDiff[]>('vcs_commit_diff', {
+      repoPath,
+      commitHash
+    });
+  }
   static async push(repoPath: string, remote?: string, branch?: string): Promise<FileOperationResult> {
     return await invoke<FileOperationResult>('vcs_push', {
       repoPath,

@@ -14,7 +14,7 @@ interface UISettings {
   autoSave: boolean;
   autoSaveInterval: number;
   theme: 'light' | 'dark';
-  themeGroup: 'default' | 'islandtheme';
+  themeGroup: 'default' | 'islandtheme' | 'fleet';
   uiZoom: number;
   fontFamily: string;
   fontLigatures: boolean;
@@ -24,6 +24,11 @@ interface UISettings {
   compilerTargetType: 'asm' | 'ir' | 'exe';
   compilerOutputFile: string;
   compilerShowIR: boolean;
+  editorBackgroundImage: string;
+  editorBackgroundOpacity: number;
+  globalWallpaperImage: string;
+  globalWallpaperOpacity: number;
+  wallpaperMode: 'none' | 'global' | 'editor';
   shortcuts: Record<string, string>;
   isSettingsWindowOpen: boolean;
   settingsInitialCategory: 'general' | 'editor' | 'files' | 'shortcuts' | 'compiler' | 'extensions' | 'other' | 'about';
@@ -33,6 +38,10 @@ interface UISettings {
   currentSidebarView: string;
   explorerWidth: number;
   consoleHeight: number;
+  fleetLayout: boolean;
+  fleetSidebarWidth: number;
+  fleetAiPanelWidth: number;
+  fleetTerminalHeight: number;
 }
 interface UIActions {
   setFontSize: (size: number) => void;
@@ -44,7 +53,7 @@ interface UIActions {
   setAutoSave: (auto: boolean) => void;
   setAutoSaveInterval: (interval: number) => void;
   setTheme: (theme: 'light' | 'dark') => void;
-  setThemeGroup: (group: 'default' | 'islandtheme') => void;
+  setThemeGroup: (group: 'default' | 'islandtheme' | 'fleet') => void;
   setUiZoom: (zoom: number) => void;
   setFontFamily: (family: string) => void;
   setFontLigatures: (ligatures: boolean) => void;
@@ -54,6 +63,11 @@ interface UIActions {
   setCompilerTargetType: (type: 'asm' | 'ir' | 'exe') => void;
   setCompilerOutputFile: (file: string) => void;
   setCompilerShowIR: (show: boolean) => void;
+  setEditorBackgroundImage: (path: string) => void;
+  setEditorBackgroundOpacity: (opacity: number) => void;
+  setGlobalWallpaperImage: (path: string) => void;
+  setGlobalWallpaperOpacity: (opacity: number) => void;
+  setWallpaperMode: (mode: 'none' | 'global' | 'editor') => void;
   setShortcuts: (shortcuts: Record<string, string>) => void;
   setSettingsWindowOpen: (open: boolean, category?: UISettings['settingsInitialCategory']) => void;
   setPluginsPanelOpen: (open: boolean) => void;
@@ -62,6 +76,10 @@ interface UIActions {
   setCurrentSidebarView: (view: string) => void;
   setExplorerWidth: (width: number) => void;
   setConsoleHeight: (height: number) => void;
+  setFleetLayout: (enabled: boolean) => void;
+  setFleetSidebarWidth: (width: number) => void;
+  setFleetAiPanelWidth: (width: number) => void;
+  setFleetTerminalHeight: (height: number) => void;
   updateSettings: (settings: Partial<UISettings>) => void;
   _emitChange: () => void;
 }
@@ -85,6 +103,11 @@ export const useUISettingsStore = create<UISettings & UIActions>()(persist((set,
   compilerTargetType: 'exe',
   compilerOutputFile: DEFAULT_COMPILER_OUTPUT,
   compilerShowIR: false,
+  editorBackgroundImage: '',
+  editorBackgroundOpacity: 15,
+  globalWallpaperImage: '',
+  globalWallpaperOpacity: 20,
+  wallpaperMode: 'none',
   shortcuts: {
     ...DEFAULT_SHORTCUTS
   },
@@ -96,6 +119,10 @@ export const useUISettingsStore = create<UISettings & UIActions>()(persist((set,
   currentSidebarView: 'explorer',
   explorerWidth: 250,
   consoleHeight: 200,
+  fleetLayout: false,
+  fleetSidebarWidth: 270,
+  fleetAiPanelWidth: 330,
+  fleetTerminalHeight: 200,
   setFontSize: fontSize => {
     set({
       fontSize
@@ -228,6 +255,36 @@ export const useUISettingsStore = create<UISettings & UIActions>()(persist((set,
     });
     get()._emitChange();
   },
+  setEditorBackgroundImage: editorBackgroundImage => {
+    set({
+      editorBackgroundImage
+    });
+    get()._emitChange();
+  },
+  setEditorBackgroundOpacity: editorBackgroundOpacity => {
+    set({
+      editorBackgroundOpacity
+    });
+    get()._emitChange();
+  },
+  setGlobalWallpaperImage: globalWallpaperImage => {
+    set({
+      globalWallpaperImage
+    });
+    get()._emitChange();
+  },
+  setGlobalWallpaperOpacity: globalWallpaperOpacity => {
+    set({
+      globalWallpaperOpacity
+    });
+    get()._emitChange();
+  },
+  setWallpaperMode: wallpaperMode => {
+    set({
+      wallpaperMode
+    });
+    get()._emitChange();
+  },
   setShortcuts: shortcuts => {
     set({
       shortcuts
@@ -255,6 +312,21 @@ export const useUISettingsStore = create<UISettings & UIActions>()(persist((set,
   }),
   setConsoleHeight: consoleHeight => set({
     consoleHeight
+  }),
+  setFleetLayout: fleetLayout => {
+    set({
+      fleetLayout
+    });
+    get()._emitChange();
+  },
+  setFleetSidebarWidth: fleetSidebarWidth => set({
+    fleetSidebarWidth
+  }),
+  setFleetAiPanelWidth: fleetAiPanelWidth => set({
+    fleetAiPanelWidth
+  }),
+  setFleetTerminalHeight: fleetTerminalHeight => set({
+    fleetTerminalHeight
   }),
   updateSettings: newSettings => {
     const currentState = get();
@@ -316,7 +388,7 @@ export const useUISettingsStore = create<UISettings & UIActions>()(persist((set,
     if (next.theme !== 'light' && next.theme !== 'dark') {
       next.theme = 'dark';
     }
-    if (next.themeGroup !== 'islandtheme' && next.themeGroup !== 'default') {
+    if (next.themeGroup !== 'islandtheme' && next.themeGroup !== 'default' && next.themeGroup !== 'fleet') {
       next.themeGroup = 'default';
     }
     if (next.currentSidebarView === 'extensions') {

@@ -108,8 +108,8 @@ export const useUpdater = () => {
     setChannel(newChannel as 'nightly' | 'canary' | 'stable');
     localStorage.setItem('kortina_update_channel', newChannel);
 
-    // Note: Tauri updater plugin doesn't expose a setChannel API
-    // Channel switching is handled via tauri.conf.json endpoint configuration
+    
+    
     console.log(`Update channel changed to: ${newChannel}`);
   }, [setChannel, setError]);
 

@@ -465,7 +465,6 @@ export const ExtensionsSettings = forwardRef<ExtensionsSettingsRef>((_props, ref
           </div>
 
           {marketLoading && marketItems.length === 0 ? <div className="extensions-empty">
-              <RefreshCw size={28} className="spinning" opacity={0.4} />
               <p>正在加载扩展市场…</p>
             </div> : marketItems.length === 0 ? <div className="extensions-empty">
               <Globe size={40} opacity={0.35} />

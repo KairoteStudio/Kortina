@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Settings, Type, FileText, Palette, Keyboard, MoreHorizontal, Info, Puzzle } from 'lucide-react';
-import { isTauri } from '../../utils/environment';
+import { isTauri, isMobile } from '../../utils/environment';
 import { ExtensionsSettings, type ExtensionsSettingsRef } from './ExtensionsSettings';
 import { DEFAULT_SHORTCUTS } from '../../constants/shortcuts';
 import { DEFAULT_COMPILER_OUTPUT } from '../../stores/UISettingsStore';
@@ -19,9 +19,9 @@ interface SettingsWindowProps {
   isOpen: boolean;
   onClose: () => void;
   theme: 'light' | 'dark';
-  themeGroup?: 'default' | 'islandtheme';
+  themeGroup?: 'default' | 'islandtheme' | 'fleet';
   setTheme: (theme: 'light' | 'dark') => void;
-  setThemeGroup?: (themeGroup: 'default' | 'islandtheme') => void;
+  setThemeGroup?: (themeGroup: 'default' | 'islandtheme' | 'fleet') => void;
   fontSize: number;
   setFontSize: (size: number) => void;
   fontFamily: string;
@@ -56,8 +56,20 @@ interface SettingsWindowProps {
   setCompilerOutputFile: (file: string) => void;
   compilerShowIR: boolean;
   setCompilerShowIR: (show: boolean) => void;
+  editorBackgroundImage: string;
+  setEditorBackgroundImage: (path: string) => void;
+  editorBackgroundOpacity: number;
+  setEditorBackgroundOpacity: (opacity: number) => void;
+  globalWallpaperImage: string;
+  setGlobalWallpaperImage: (path: string) => void;
+  globalWallpaperOpacity: number;
+  setGlobalWallpaperOpacity: (opacity: number) => void;
+  wallpaperMode: 'none' | 'global' | 'editor';
+  setWallpaperMode: (mode: 'none' | 'global' | 'editor') => void;
   shortcuts: Record<string, string>;
   setShortcuts: (shortcuts: Record<string, string>) => void;
+  fleetLayout: boolean;
+  setFleetLayout: (enabled: boolean) => void;
   isStandalone?: boolean;
   initialCategory?: Category;
   openExternalUrl?: (url: string) => void;
@@ -103,8 +115,20 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
   setCompilerOutputFile,
   compilerShowIR,
   setCompilerShowIR,
+  editorBackgroundImage,
+  setEditorBackgroundImage,
+  editorBackgroundOpacity,
+  setEditorBackgroundOpacity,
+  globalWallpaperImage,
+  setGlobalWallpaperImage,
+  globalWallpaperOpacity,
+  setGlobalWallpaperOpacity,
+  wallpaperMode,
+  setWallpaperMode,
   shortcuts,
   setShortcuts,
+  fleetLayout,
+  setFleetLayout,
   isStandalone = false,
   initialCategory = 'general',
   openExternalUrl
@@ -118,7 +142,7 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
   const isTauriEnv = isTauri();
   const extensionsRef = useRef<ExtensionsSettingsRef>(null);
   const [tempTheme, setTempTheme] = useState(theme);
-  const [tempThemeGroup, setTempThemeGroup] = useState<'default' | 'islandtheme'>(themeGroup || 'default');
+  const [tempThemeGroup, setTempThemeGroup] = useState<'default' | 'islandtheme' | 'fleet'>(themeGroup || 'default');
   const [tempFontSize, setTempFontSize] = useState(fontSize);
   const [tempFontFamily, setTempFontFamily] = useState(fontFamily);
   const [tempFontLigatures, setTempFontLigatures] = useState(fontLigatures);
@@ -136,6 +160,12 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
   const [tempCompilerTargetType, setTempCompilerTargetType] = useState(compilerTargetType);
   const [tempCompilerOutputFile, setTempCompilerOutputFile] = useState(compilerOutputFile);
   const [tempCompilerShowIR, setTempCompilerShowIR] = useState(compilerShowIR);
+  const [tempEditorBackgroundImage, setTempEditorBackgroundImage] = useState(editorBackgroundImage);
+  const [tempEditorBackgroundOpacity, setTempEditorBackgroundOpacity] = useState(editorBackgroundOpacity);
+  const [tempGlobalWallpaperImage, setTempGlobalWallpaperImage] = useState(globalWallpaperImage);
+  const [tempGlobalWallpaperOpacity, setTempGlobalWallpaperOpacity] = useState(globalWallpaperOpacity);
+  const [tempWallpaperMode, setTempWallpaperMode] = useState(wallpaperMode);
+  const [tempFleetLayout, setTempFleetLayout] = useState(fleetLayout);
   useEffect(() => {
     if (isOpen) {
       setIsClosing(false);
@@ -159,8 +189,14 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
       setTempCompilerTargetType(compilerTargetType);
       setTempCompilerOutputFile(compilerOutputFile);
       setTempCompilerShowIR(compilerShowIR);
+      setTempEditorBackgroundImage(editorBackgroundImage);
+      setTempEditorBackgroundOpacity(editorBackgroundOpacity);
+      setTempGlobalWallpaperImage(globalWallpaperImage);
+      setTempGlobalWallpaperOpacity(globalWallpaperOpacity);
+      setTempWallpaperMode(wallpaperMode);
+      setTempFleetLayout(fleetLayout);
     }
-  }, [isOpen, theme, themeGroup, fontSize, fontFamily, fontLigatures, syntaxTheme, tabSize, wordWrap, showLineNumbers, autoSave, autoSaveInterval, showMinimap, enableCodeLens, uiZoom, compilerPath, compilerUseSystemPath, compilerTargetType, compilerOutputFile, compilerShowIR, initialCategory]);
+  }, [isOpen, theme, themeGroup, fontSize, fontFamily, fontLigatures, syntaxTheme, tabSize, wordWrap, showLineNumbers, autoSave, autoSaveInterval, showMinimap, enableCodeLens, uiZoom, compilerPath, compilerUseSystemPath, compilerTargetType, compilerOutputFile, compilerShowIR, editorBackgroundImage, editorBackgroundOpacity, globalWallpaperImage, globalWallpaperOpacity, wallpaperMode, fleetLayout, initialCategory]);
   const handleCategoryChange = useCallback((category: Category) => {
     if (category === activeCategory || isAnimating) return;
     const prevIndex = CATEGORIES.indexOf(prevCategoryRef.current);
@@ -217,6 +253,10 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
       alert('自动检测功能仅在桌面应用中可用');
       return;
     }
+    if (isMobile()) {
+      alert('自动检测功能在移动设备上不可用，请手动输入编译器路径');
+      return;
+    }
     try {
       const {
         invoke
@@ -235,6 +275,13 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
   const openFileSelector = async () => {
     if (!isTauriEnv) {
       alert('文件选择功能仅在桌面应用中可用');
+      return;
+    }
+    if (isMobile()) {
+      const result = window.prompt('请输入编译器路径', tempCompilerPath || '/system/bin/');
+      if (result && result.trim()) {
+        setTempCompilerPath(result.trim());
+      }
       return;
     }
     try {
@@ -281,8 +328,14 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
     setCompilerTargetType(tempCompilerTargetType);
     setCompilerOutputFile(tempCompilerOutputFile);
     setCompilerShowIR(tempCompilerShowIR);
+    setEditorBackgroundImage(tempEditorBackgroundImage);
+    setEditorBackgroundOpacity(tempEditorBackgroundOpacity);
+    setGlobalWallpaperImage(tempGlobalWallpaperImage);
+    setGlobalWallpaperOpacity(tempGlobalWallpaperOpacity);
+    setWallpaperMode(tempWallpaperMode);
+    setFleetLayout(tempFleetLayout);
     setShortcuts(shortcuts);
-  }, [tempTheme, setTheme, setThemeGroup, tempThemeGroup, tempFontSize, setFontSize, tempFontFamily, setFontFamily, tempFontLigatures, setFontLigatures, tempSyntaxTheme, setSyntaxTheme, tempTabSize, setTabSize, tempWordWrap, setWordWrap, tempShowLineNumbers, setShowLineNumbers, tempAutoSave, setAutoSave, tempAutoSaveInterval, setAutoSaveInterval, tempShowMinimap, setShowMinimap, tempEnableCodeLens, setEnableCodeLens, tempUiZoom, setUiZoom, tempCompilerPath, setCompilerPath, tempCompilerUseSystemPath, setCompilerUseSystemPath, tempCompilerTargetType, setCompilerTargetType, tempCompilerOutputFile, setCompilerOutputFile, tempCompilerShowIR, setCompilerShowIR, shortcuts, setShortcuts]);
+  }, [tempTheme, setTheme, setThemeGroup, tempThemeGroup, tempFontSize, setFontSize, tempFontFamily, setFontFamily, tempFontLigatures, setFontLigatures, tempSyntaxTheme, setSyntaxTheme, tempTabSize, setTabSize, tempWordWrap, setWordWrap, tempShowLineNumbers, setShowLineNumbers, tempAutoSave, setAutoSave, tempAutoSaveInterval, setAutoSaveInterval, tempShowMinimap, setShowMinimap, tempEnableCodeLens, setEnableCodeLens, tempUiZoom, setUiZoom, tempCompilerPath, setCompilerPath, tempCompilerUseSystemPath, setCompilerUseSystemPath, tempCompilerTargetType, setCompilerTargetType, tempCompilerOutputFile, setCompilerOutputFile, tempCompilerShowIR, setCompilerShowIR, tempEditorBackgroundImage, setEditorBackgroundImage, tempEditorBackgroundOpacity, setEditorBackgroundOpacity, tempWallpaperMode, setWallpaperMode, tempFleetLayout, setFleetLayout, shortcuts, setShortcuts]);
   const handleOK = async () => {
     saveSettings();
     await extensionsRef.current?.applyChanges();
@@ -313,6 +366,12 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
     setTempCompilerTargetType(compilerTargetType);
     setTempCompilerOutputFile(compilerOutputFile);
     setTempCompilerShowIR(compilerShowIR);
+    setTempEditorBackgroundImage(editorBackgroundImage);
+    setTempEditorBackgroundOpacity(editorBackgroundOpacity);
+    setTempGlobalWallpaperImage(globalWallpaperImage);
+    setTempGlobalWallpaperOpacity(globalWallpaperOpacity);
+    setTempWallpaperMode(wallpaperMode);
+    setTempFleetLayout(fleetLayout);
     handleClose();
   };
   const handleReset = () => {
@@ -335,6 +394,9 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
     setTempCompilerTargetType('exe');
     setTempCompilerOutputFile(DEFAULT_COMPILER_OUTPUT);
     setTempCompilerShowIR(false);
+    setTempEditorBackgroundImage('');
+    setTempEditorBackgroundOpacity(15);
+    setTempFleetLayout(false);
     setTheme('dark');
     if (setThemeGroup) setThemeGroup('default');
     setFontSize(14);
@@ -354,6 +416,9 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
     setCompilerTargetType('exe');
     setCompilerOutputFile(DEFAULT_COMPILER_OUTPUT);
     setCompilerShowIR(false);
+    setEditorBackgroundImage('');
+    setEditorBackgroundOpacity(15);
+    setFleetLayout(false);
     setShortcuts({
       ...DEFAULT_SHORTCUTS
     });
@@ -494,9 +559,9 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
   const renderContentFor = (category: Category) => {
     switch (category) {
       case 'general':
-        return <SettingsGeneral tempTheme={tempTheme} setTempTheme={setTempTheme} tempThemeGroup={tempThemeGroup} setTempThemeGroup={setTempThemeGroup} tempUiZoom={tempUiZoom} setTempUiZoom={setTempUiZoom} />;
+        return <SettingsGeneral tempTheme={tempTheme} setTempTheme={setTempTheme} tempThemeGroup={tempThemeGroup} setTempThemeGroup={setTempThemeGroup} tempUiZoom={tempUiZoom} setTempUiZoom={setTempUiZoom} tempGlobalWallpaperImage={tempGlobalWallpaperImage} setTempGlobalWallpaperImage={setTempGlobalWallpaperImage} tempGlobalWallpaperOpacity={tempGlobalWallpaperOpacity} setTempGlobalWallpaperOpacity={setTempGlobalWallpaperOpacity} tempEditorBackgroundImage={tempEditorBackgroundImage} setTempEditorBackgroundImage={setTempEditorBackgroundImage} tempEditorBackgroundOpacity={tempEditorBackgroundOpacity} setTempEditorBackgroundOpacity={setTempEditorBackgroundOpacity} tempWallpaperMode={tempWallpaperMode} setTempWallpaperMode={setTempWallpaperMode} tempFleetLayout={tempFleetLayout} setTempFleetLayout={setTempFleetLayout} />;
       case 'editor':
-        return <SettingsEditor tempFontSize={tempFontSize} setTempFontSize={setTempFontSize} tempFontFamily={tempFontFamily} setTempFontFamily={setTempFontFamily} tempFontLigatures={tempFontLigatures} setTempFontLigatures={setTempFontLigatures} tempSyntaxTheme={tempSyntaxTheme} setTempSyntaxTheme={setTempSyntaxTheme} tempTabSize={tempTabSize} setTempTabSize={setTempTabSize} tempWordWrap={tempWordWrap} setTempWordWrap={setTempWordWrap} tempShowLineNumbers={tempShowLineNumbers} setTempShowLineNumbers={setTempShowLineNumbers} tempShowMinimap={tempShowMinimap} setTempShowMinimap={setTempShowMinimap} tempEnableCodeLens={tempEnableCodeLens} setTempEnableCodeLens={setTempEnableCodeLens} />;
+        return <SettingsEditor tempFontSize={tempFontSize} setTempFontSize={setTempFontSize} tempFontFamily={tempFontFamily} setTempFontFamily={setTempFontFamily} tempFontLigatures={tempFontLigatures} setTempFontLigatures={setTempFontLigatures} tempSyntaxTheme={tempSyntaxTheme} setTempSyntaxTheme={setTempSyntaxTheme} tempTabSize={tempTabSize} setTempTabSize={setTempTabSize} tempWordWrap={tempWordWrap} setTempWordWrap={setTempWordWrap} tempShowLineNumbers={tempShowLineNumbers} setTempShowLineNumbers={setTempShowLineNumbers} tempShowMinimap={tempShowMinimap} setTempShowMinimap={setTempShowMinimap} tempEnableCodeLens={tempEnableCodeLens} setTempEnableCodeLens={setTempEnableCodeLens} tempEditorBackgroundImage={tempEditorBackgroundImage} setTempEditorBackgroundImage={setTempEditorBackgroundImage} tempEditorBackgroundOpacity={tempEditorBackgroundOpacity} setTempEditorBackgroundOpacity={setTempEditorBackgroundOpacity} />;
       case 'files':
         return <SettingsFiles tempAutoSave={tempAutoSave} setTempAutoSave={setTempAutoSave} tempAutoSaveInterval={tempAutoSaveInterval} setTempAutoSaveInterval={setTempAutoSaveInterval} />;
       case 'shortcuts':
@@ -559,7 +624,7 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
       <div className="settings-content-area">
         <div className="settings-content-header" data-tauri-drag-region="true">
           <TitleRoller activeCategory={activeCategory} direction={slideDirection} />
-          <button className="settings-close-btn" onClick={handleClose}>
+          <button className="settings-close-btn" onClick={handleClose} onTouchEnd={(e) => { e.preventDefault(); handleClose(); }}>
             <X size={20} />
           </button>
         </div>
@@ -592,12 +657,21 @@ const SettingsWindowComponent: React.FC<SettingsWindowProps> = ({
         </div>
       </div>
     </div>;
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === overlayRef.current && !isClosing) {
+      handleClose();
+    }
+  }, [isClosing, handleClose]);
+  const handleOverlayTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.target === overlayRef.current && !isClosing) {
+      handleClose();
+    }
+  }, [isClosing, handleClose]);
   if (isStandalone) {
     return content;
   }
-  return <div className={`settings-overlay ${isClosing ? 'closing' : ''}`} onClick={e => {
-    if (e.target === e.currentTarget && !isClosing) handleClose();
-  }}>
+  return <div ref={overlayRef} className={`settings-overlay ${isClosing ? 'closing' : ''}`} onClick={handleOverlayClick} onTouchStart={handleOverlayTouchStart}>
       {content}
     </div>;
 };

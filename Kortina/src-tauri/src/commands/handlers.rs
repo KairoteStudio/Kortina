@@ -3,6 +3,34 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use tauri::{Emitter, Manager, State};
 
+#[allow(unused_macros)]
+macro_rules! desktop_only {
+    ($expr:expr) => {
+        #[cfg(desktop)]
+        {
+            $expr
+        }
+        #[cfg(not(desktop))]
+        {
+            Ok(())
+        }
+    };
+}
+
+#[allow(unused_macros)]
+macro_rules! desktop_only_val {
+    ($expr:expr) => {
+        #[cfg(desktop)]
+        {
+            $expr
+        }
+        #[cfg(not(desktop))]
+        {
+            ()
+        }
+    };
+}
+
 #[tauri::command]
 pub async fn terminal_create_session(
     app_handle: tauri::AppHandle,
@@ -815,6 +843,14 @@ pub async fn vcs_diff(
 }
 
 #[tauri::command]
+pub async fn vcs_commit_diff(
+    repo_path: String,
+    commit_hash: String,
+) -> Result<Vec<crate::git::operations::GitDiff>, String> {
+    crate::git::operations::git_commit_diff(repo_path, commit_hash).await
+}
+
+#[tauri::command]
 pub async fn vcs_push(
     repo_path: String,
     remote: Option<String>,
@@ -896,19 +932,24 @@ pub async fn launch_vcs_panel(
     let (window, is_new) = if let Some(vcs_window) = app_handle.get_webview_window("vcs") {
         (vcs_window, false)
     } else {
-        let created = tauri::WebviewWindowBuilder::new(
+        let mut builder = tauri::WebviewWindowBuilder::new(
             &app_handle,
             "vcs",
             tauri::WebviewUrl::App("index.html?window=vcs".into()),
         )
         .title("版本控制")
         .inner_size(400.0, 700.0)
-        .min_inner_size(300.0, 400.0)
-        .decorations(false)
-        .visible(false)
-        .center()
-        .build()
-        .map_err(|e| format!("无法创建VCS窗口: {}", e))?;
+        .visible(false);
+        #[cfg(desktop)]
+        {
+            builder = builder
+                .min_inner_size(300.0, 400.0)
+                .decorations(false)
+                .center();
+        }
+        let created = builder
+            .build()
+            .map_err(|e| format!("无法创建VCS窗口: {}", e))?;
         (created, true)
     };
 
@@ -962,36 +1003,39 @@ pub async fn send_theme_to_vcs_panel(
 #[tauri::command]
 pub async fn merge_vcs_to_main(
     app_handle: tauri::AppHandle,
-    vcs_width: u32,
-    main_width: u32,
-    main_height: u32,
-    main_x: i32,
-    main_y: i32,
+    _vcs_width: u32,
+    _main_width: u32,
+    _main_height: u32,
+    _main_x: i32,
+    _main_y: i32,
 ) -> Result<(), String> {
-    let main_window = app_handle
-        .get_webview_window("main")
-        .ok_or("找不到主窗口")?;
+    #[cfg(desktop)]
+    {
+        let main_window = app_handle
+            .get_webview_window("main")
+            .ok_or("找不到主窗口")?;
 
-    let new_main_width = main_width + vcs_width;
+        let new_main_width = _main_width + _vcs_width;
 
-    main_window
-        .set_size(tauri::Size::Physical(tauri::PhysicalSize {
-            width: new_main_width,
-            height: main_height,
-        }))
-        .map_err(|e| format!("调整主窗口大小失败: {}", e))?;
+        main_window
+            .set_size(tauri::Size::Physical(tauri::PhysicalSize {
+                width: new_main_width,
+                height: _main_height,
+            }))
+            .map_err(|e| format!("调整主窗口大小失败: {}", e))?;
 
-    main_window
-        .set_position(tauri::Position::Physical(tauri::PhysicalPosition {
-            x: main_x,
-            y: main_y,
-        }))
-        .map_err(|e| format!("设置主窗口位置失败: {}", e))?;
+        main_window
+            .set_position(tauri::Position::Physical(tauri::PhysicalPosition {
+                x: _main_x,
+                y: _main_y,
+            }))
+            .map_err(|e| format!("设置主窗口位置失败: {}", e))?;
 
-    if let Some(vcs_window) = app_handle.get_webview_window("vcs") {
-        vcs_window
-            .hide()
-            .map_err(|e| format!("隐藏VCS窗口失败: {}", e))?;
+        if let Some(vcs_window) = app_handle.get_webview_window("vcs") {
+            vcs_window
+                .hide()
+                .map_err(|e| format!("隐藏VCS窗口失败: {}", e))?;
+        }
     }
 
     Ok(())
@@ -1000,58 +1044,61 @@ pub async fn merge_vcs_to_main(
 #[tauri::command]
 pub async fn dock_vcs_to_main(
     app_handle: tauri::AppHandle,
-    vcs_width: u32,
-    main_width: u32,
-    main_height: u32,
-    main_x: i32,
-    main_y: i32,
+    _vcs_width: u32,
+    _main_width: u32,
+    _main_height: u32,
+    _main_x: i32,
+    _main_y: i32,
 ) -> Result<(), String> {
-    let main_window = app_handle
-        .get_webview_window("main")
-        .ok_or("找不到主窗口")?;
+    #[cfg(desktop)]
+    {
+        let main_window = app_handle
+            .get_webview_window("main")
+            .ok_or("找不到主窗口")?;
 
-    let new_main_width = main_width + vcs_width;
+        let new_main_width = _main_width + _vcs_width;
 
-    main_window
-        .set_size(tauri::Size::Physical(tauri::PhysicalSize {
-            width: new_main_width,
-            height: main_height,
-        }))
-        .map_err(|e| format!("调整主窗口大小失败: {}", e))?;
-
-    main_window
-        .set_position(tauri::Position::Physical(tauri::PhysicalPosition {
-            x: main_x,
-            y: main_y,
-        }))
-        .map_err(|e| format!("设置主窗口位置失败: {}", e))?;
-
-    main_window
-        .set_decorations(false)
-        .map_err(|e| format!("隐藏主窗口装饰失败: {}", e))?;
-
-    if let Some(vcs_window) = app_handle.get_webview_window("vcs") {
-        vcs_window
+        main_window
             .set_size(tauri::Size::Physical(tauri::PhysicalSize {
-                width: vcs_width,
-                height: main_height,
+                width: new_main_width,
+                height: _main_height,
             }))
-            .map_err(|e| format!("调整VCS窗口大小失败: {}", e))?;
+            .map_err(|e| format!("调整主窗口大小失败: {}", e))?;
 
-        vcs_window
+        main_window
             .set_position(tauri::Position::Physical(tauri::PhysicalPosition {
-                x: main_x + main_width as i32,
-                y: main_y,
+                x: _main_x,
+                y: _main_y,
             }))
-            .map_err(|e| format!("设置VCS窗口位置失败: {}", e))?;
+            .map_err(|e| format!("设置主窗口位置失败: {}", e))?;
 
-        vcs_window
-            .show()
-            .map_err(|e| format!("显示VCS窗口失败: {}", e))?;
+        main_window
+            .set_decorations(false)
+            .map_err(|e| format!("隐藏主窗口装饰失败: {}", e))?;
 
-        vcs_window
-            .emit("vcs-docked", true)
-            .map_err(|e| format!("发送停靠消息失败: {}", e))?;
+        if let Some(vcs_window) = app_handle.get_webview_window("vcs") {
+            vcs_window
+                .set_size(tauri::Size::Physical(tauri::PhysicalSize {
+                    width: _vcs_width,
+                    height: _main_height,
+                }))
+                .map_err(|e| format!("调整VCS窗口大小失败: {}", e))?;
+
+            vcs_window
+                .set_position(tauri::Position::Physical(tauri::PhysicalPosition {
+                    x: _main_x + _main_width as i32,
+                    y: _main_y,
+                }))
+                .map_err(|e| format!("设置VCS窗口位置失败: {}", e))?;
+
+            vcs_window
+                .show()
+                .map_err(|e| format!("显示VCS窗口失败: {}", e))?;
+
+            vcs_window
+                .emit("vcs-docked", true)
+                .map_err(|e| format!("发送停靠消息失败: {}", e))?;
+        }
     }
 
     Ok(())
@@ -1059,26 +1106,29 @@ pub async fn dock_vcs_to_main(
 
 #[tauri::command]
 pub async fn undock_vcs_from_main(app_handle: tauri::AppHandle) -> Result<(), String> {
-    let main_window = app_handle
-        .get_webview_window("main")
-        .ok_or("找不到主窗口")?;
+    #[cfg(desktop)]
+    {
+        let main_window = app_handle
+            .get_webview_window("main")
+            .ok_or("找不到主窗口")?;
 
-    main_window
-        .set_decorations(true)
-        .map_err(|e| format!("恢复主窗口装饰失败: {}", e))?;
-
-    if let Some(vcs_window) = app_handle.get_webview_window("vcs") {
-        vcs_window
+        main_window
             .set_decorations(true)
-            .map_err(|e| format!("恢复VCS窗口装饰失败: {}", e))?;
+            .map_err(|e| format!("恢复主窗口装饰失败: {}", e))?;
 
-        vcs_window
-            .set_always_on_top(false)
-            .map_err(|e| format!("取消VCS窗口置顶失败: {}", e))?;
+        if let Some(vcs_window) = app_handle.get_webview_window("vcs") {
+            vcs_window
+                .set_decorations(true)
+                .map_err(|e| format!("恢复VCS窗口装饰失败: {}", e))?;
 
-        vcs_window
-            .emit("vcs-undocked", true)
-            .map_err(|e| format!("发送分离消息失败: {}", e))?;
+            vcs_window
+                .set_always_on_top(false)
+                .map_err(|e| format!("取消VCS窗口置顶失败: {}", e))?;
+
+            vcs_window
+                .emit("vcs-undocked", true)
+                .map_err(|e| format!("发送分离消息失败: {}", e))?;
+        }
     }
 
     Ok(())
@@ -1094,20 +1144,25 @@ pub async fn launch_settings_window(
     {
         (settings_window, false)
     } else {
-        let created = tauri::WebviewWindowBuilder::new(
+        let mut builder = tauri::WebviewWindowBuilder::new(
             &app_handle,
             "settings",
             tauri::WebviewUrl::App("index.html?window=settings".into()),
         )
         .title("设置")
         .inner_size(800.0, 600.0)
-        .min_inner_size(600.0, 400.0)
-        .decorations(false)
-        .resizable(false)
-        .visible(false)
-        .center()
-        .build()
-        .map_err(|e| format!("无法创建设置窗口: {}", e))?;
+        .visible(false);
+        #[cfg(desktop)]
+        {
+            builder = builder
+                .min_inner_size(600.0, 400.0)
+                .decorations(false)
+                .resizable(false)
+                .center();
+        }
+        let created = builder
+            .build()
+            .map_err(|e| format!("无法创建设置窗口: {}", e))?;
         (created, true)
     };
 
@@ -1201,22 +1256,27 @@ pub async fn launch_input_dialog(
     let window = if let Some(existing) = app_handle.get_webview_window("input-dialog") {
         existing
     } else {
-        tauri::WebviewWindowBuilder::new(
+        let mut builder = tauri::WebviewWindowBuilder::new(
             &app_handle,
             "input-dialog",
             tauri::WebviewUrl::App("index.html?window=input-dialog".into()),
         )
         .title(&options.title)
-        .inner_size(420.0, 180.0)
-        .min_inner_size(360.0, 160.0)
-        .max_inner_size(560.0, 240.0)
-        .resizable(false)
-        .decorations(false)
-        .always_on_top(true)
-        .visible(false)
-        .center()
-        .build()
-        .map_err(|e| format!("无法创建输入对话框窗口: {}", e))?
+        .inner_size(420.0, 180.0);
+        #[cfg(desktop)]
+        {
+            builder = builder
+                .min_inner_size(360.0, 160.0)
+                .max_inner_size(560.0, 240.0)
+                .resizable(false)
+                .decorations(false)
+                .always_on_top(true)
+                .center();
+        }
+        builder
+            .visible(false)
+            .build()
+            .map_err(|e| format!("无法创建输入对话框窗口: {}", e))?
     };
 
     let _ = window.set_title(&options.title);
@@ -1282,22 +1342,27 @@ pub async fn launch_compile_options(
     let window = if let Some(existing) = app_handle.get_webview_window("compile-options") {
         existing
     } else {
-        tauri::WebviewWindowBuilder::new(
+        let mut builder = tauri::WebviewWindowBuilder::new(
             &app_handle,
             "compile-options",
             tauri::WebviewUrl::App("index.html?window=compile-options".into()),
         )
         .title("编译选项")
-        .inner_size(460.0, 420.0)
-        .min_inner_size(400.0, 360.0)
-        .max_inner_size(560.0, 560.0)
-        .resizable(false)
-        .decorations(false)
-        .always_on_top(true)
-        .visible(false)
-        .center()
-        .build()
-        .map_err(|e| format!("无法创建编译选项窗口: {}", e))?
+        .inner_size(460.0, 420.0);
+        #[cfg(desktop)]
+        {
+            builder = builder
+                .min_inner_size(400.0, 360.0)
+                .max_inner_size(560.0, 560.0)
+                .resizable(false)
+                .decorations(false)
+                .always_on_top(true)
+                .center();
+        }
+        builder
+            .visible(false)
+            .build()
+            .map_err(|e| format!("无法创建编译选项窗口: {}", e))?
     };
 
     let _ = window.set_title("编译选项");
@@ -1361,4 +1426,56 @@ pub async fn get_running_vcs_panels() -> Result<Vec<String>, String> {
 #[tauri::command]
 pub async fn handle_vcs_panel_message(_message: String) -> Result<(), String> {
     Ok(())
+}
+
+#[cfg(target_os = "android")]
+#[tauri::command]
+pub async fn open_folder_picker_android() -> Result<Option<String>, String> {
+    use jni::objects::JString;
+    use jni::signature::JavaType;
+    use jni::signature::Primitive;
+    use jni::JavaVM;
+    use std::sync::Arc;
+
+    let ctx = ndk_context::android_context();
+    let vm = Arc::new(unsafe { JavaVM::from_raw(ctx.vm().cast()).map_err(|e| format!("获取 JVM 失败: {}", e))? });
+    let activity = unsafe { jni::objects::JObject::from_raw(ctx.context().cast()) };
+
+    let mut env = vm.attach_current_thread().map_err(|e| format!("附加线程失败: {}", e))?;
+
+    let activity_class = env.get_object_class(&activity)
+        .map_err(|e| format!("获取 Activity 类失败: {}", e))?;
+
+    let method_id = env.get_method_id(
+        &activity_class,
+        "openFolderPicker",
+        "()Ljava/lang/String;",
+    ).map_err(|e| format!("找不到方法: {}", e))?;
+
+    let result = unsafe {
+        env.call_method_unchecked(
+            &activity,
+            method_id,
+            jni::signature::ReturnType::Object,
+            &[],
+        )
+    }.map_err(|e| format!("调用方法失败: {}", e))?;
+
+    let jstring = result.l()
+        .map_err(|e| format!("转换结果失败: {}", e))?;
+
+    if jstring.is_null() {
+        Ok(None)
+    } else {
+        let jstring_obj = JString::from(jstring);
+        let string = env.get_string(&jstring_obj)
+            .map_err(|e| format!("获取字符串失败: {}", e))?;
+        Ok(Some(string.to_string_lossy().to_string()))
+    }
+}
+
+#[cfg(not(target_os = "android"))]
+#[tauri::command]
+pub async fn open_folder_picker_android() -> Result<Option<String>, String> {
+    Ok(None)
 }

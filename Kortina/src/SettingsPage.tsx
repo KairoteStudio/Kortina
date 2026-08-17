@@ -15,7 +15,7 @@ export const SettingsPage: React.FC = () => {
         const parsed = JSON.parse(raw);
         const state = parsed?.state ?? parsed;
         const theme = state?.theme === 'light' ? 'light' : 'dark';
-        const group = state?.themeGroup === 'islandtheme' ? 'islandtheme' : 'default';
+        const group = state?.themeGroup === 'islandtheme' ? 'islandtheme' : state?.themeGroup === 'fleet' ? 'fleet' : 'default';
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.setAttribute('data-theme-group', group);
       }
@@ -29,7 +29,7 @@ export const SettingsPage: React.FC = () => {
       if (theme) {
         document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
       }
-      if (themeGroup === 'islandtheme' || themeGroup === 'default') {
+      if (themeGroup === 'islandtheme' || themeGroup === 'default' || themeGroup === 'fleet') {
         document.documentElement.setAttribute('data-theme-group', themeGroup);
       }
     };

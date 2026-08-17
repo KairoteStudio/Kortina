@@ -18,7 +18,7 @@ export const AppEvents = {
 export type AppEventName = (typeof AppEvents)[keyof typeof AppEvents];
 export interface SettingsChangedPayload {
   theme?: 'light' | 'dark';
-  themeGroup?: 'default' | 'islandtheme';
+  themeGroup?: 'default' | 'islandtheme' | 'fleet';
   fontSize?: number;
   fontFamily?: string;
   fontLigatures?: boolean;

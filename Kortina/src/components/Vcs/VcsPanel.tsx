@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Github, Plus, Minus, GitBranch, GitCommit, GitPullRequest, GitCommitVertical, RefreshCw, Check, X, AlertCircle, FileDiff, Download, GitMerge, Trash2, SquareArrowOutUpRight, RotateCcw } from 'lucide-react';
 import { useSCM } from '../../hooks/useSCM';
 import type { SCMResource, SCMResourceGroup } from '../../services/scm';
-import { VcsHistory } from './VcsHistory';
 import { VcsDiffViewer } from './VcsDiffViewer';
 import './VcsPanel.css';
 interface VcsPanelProps {
@@ -17,7 +16,7 @@ export const VcsPanel: React.FC<VcsPanelProps> = ({
   onActionTriggered,
   onOpenInWindow
 }) => {
-  const [activeTab, setActiveTab] = useState<'changes' | 'history' | 'branches'>('changes');
+  const [activeTab, setActiveTab] = useState<'changes' | 'branches'>('changes');
   const [newBranchName, setNewBranchName] = useState('');
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [showCommitInput, setShowCommitInput] = useState(false);
@@ -115,27 +114,26 @@ export const VcsPanel: React.FC<VcsPanelProps> = ({
   const getStatusIcon = (resource: SCMResource) => {
     switch (resource.status) {
       case 'untracked':
-        return <div className="status-icon untracked" title={resource.decorations.tooltip}>?</div>;
+        return <span className="status-icon untracked" title={resource.decorations.tooltip}>U</span>;
       case 'modified':
-        return <div className="status-icon modified" title={resource.decorations.tooltip}>M</div>;
+        return <span className="status-icon modified" title={resource.decorations.tooltip}>M</span>;
       case 'added':
-        return <div className="status-icon added" title={resource.decorations.tooltip}>A</div>;
+        return <span className="status-icon added" title={resource.decorations.tooltip}>A</span>;
       case 'deleted':
-        return <div className="status-icon deleted" title={resource.decorations.tooltip}>D</div>;
+        return <span className="status-icon deleted" title={resource.decorations.tooltip}>D</span>;
       case 'renamed':
-        return <div className="status-icon renamed" title={resource.decorations.tooltip}>R</div>;
+        return <span className="status-icon renamed" title={resource.decorations.tooltip}>R</span>;
       case 'copied':
-        return <div className="status-icon copied" title={resource.decorations.tooltip}>C</div>;
+        return <span className="status-icon copied" title={resource.decorations.tooltip}>C</span>;
       case 'conflicted':
-        return <div className="status-icon conflicted" title={resource.decorations.tooltip}>!</div>;
+        return <span className="status-icon conflicted" title={resource.decorations.tooltip}>!</span>;
       default:
-        return <div className="status-icon modified" title={resource.decorations.tooltip}>M</div>;
+        return <span className="status-icon modified" title={resource.decorations.tooltip}>M</span>;
     }
   };
   const renderResource = (resource: SCMResource) => {
     const fileName = resource.originalFilePath ? `${resource.originalFilePath} → ${resource.filePath}` : resource.filePath;
     return <div key={resource.id} className="change-item" title={resource.decorations.tooltip}>
-        {getStatusIcon(resource)}
         <span className={`file-name ${resource.decorations.strikeThrough ? 'strikethrough' : ''} ${resource.decorations.faded ? 'faded' : ''}`}>
           {fileName}
         </span>
@@ -152,6 +150,7 @@ export const VcsPanel: React.FC<VcsPanelProps> = ({
             <RotateCcw size={14} />
           </button>
         </div>
+        {getStatusIcon(resource)}
       </div>;
   };
   const renderGroup = (group: SCMResourceGroup) => {
@@ -217,9 +216,6 @@ export const VcsPanel: React.FC<VcsPanelProps> = ({
           <button className={`vcs-tab ${activeTab === 'changes' ? 'active' : ''}`} onClick={() => setActiveTab('changes')}>
             更改
             {totalChanges > 0 && <span className="tab-badge">{totalChanges}</span>}
-          </button>
-          <button className={`vcs-tab ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>
-            历史
           </button>
           <button className={`vcs-tab ${activeTab === 'branches' ? 'active' : ''}`} onClick={() => setActiveTab('branches')}>
             分支
@@ -295,8 +291,6 @@ export const VcsPanel: React.FC<VcsPanelProps> = ({
                 提交
               </button>}
           </div>
-        </div> : activeTab === 'history' ? <div className="vcs-tab-content">
-          <VcsHistory projectPath={projectPath} />
         </div> : <div className="vcs-tab-content">
           <div className="vcs-branch-info">
             <GitBranch size={16} />
