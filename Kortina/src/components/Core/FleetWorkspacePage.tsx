@@ -11,6 +11,7 @@ interface FleetWorkspacePageProps {
   terminalPanel?: React.ReactNode;
   statusBar: React.ReactNode;
   currentProjectName?: string;
+  onToggleAiPanel?: () => void;
 }
 
 function FleetAssistantMark() {
@@ -61,14 +62,14 @@ function FleetAiHint({
   );
 }
 
-function FleetAssistantPanel({ currentProjectName = 'Kortina' }: { currentProjectName?: string }) {
+function FleetAssistantPanel({ currentProjectName = 'Kortina', onClose }: { currentProjectName?: string; onClose?: () => void }) {
   return (
     <aside className="fleet-ai-panel" aria-label="Fleet AI Assistant">
       <div className="fleet-ai-header">
         <div className="fleet-ai-tab">
           <Bot size={15} strokeWidth={1.8} />
           <span>AI Assistant</span>
-          <button type="button" className="fleet-ai-tab-close" aria-label="关闭 AI Assistant">
+          <button type="button" className="fleet-ai-tab-close" aria-label="关闭 AI Assistant" onClick={onClose}>
             <X size={14} strokeWidth={2} />
           </button>
         </div>
@@ -109,29 +110,34 @@ export const FleetWorkspacePage: React.FC<FleetWorkspacePageProps> = ({
   terminalPanel,
   statusBar,
   currentProjectName,
+  onToggleAiPanel,
 }) => {
   const gridRef = useRef<HTMLDivElement>(null);
-  const { fleetSidebarWidth, fleetAiPanelWidth, fleetTerminalHeight } = useUISettingsStore();
+  const { fleetSidebarWidth, fleetAiPanelWidth, fleetAiPanelVisible, fleetTerminalHeight } = useUISettingsStore();
   const { beginSidebarResize, beginAiPanelResize, beginTerminalResize, isDragging, activeHandle } = useFleetResize({ gridRef });
 
-  const gridStyle: React.CSSProperties = leftPanelCollapsed
-    ? {
-        gridTemplateColumns: `minmax(0, 1fr) 6px ${fleetAiPanelWidth}px`,
-      }
-    : {
-        gridTemplateColumns: `${fleetSidebarWidth}px 6px minmax(0, 1fr) 6px ${fleetAiPanelWidth}px`,
-      };
+  const gridStyle: React.CSSProperties = {
+    '--fleet-sidebar-w': `${fleetSidebarWidth}px`,
+    '--fleet-ai-w': `${fleetAiPanelWidth}px`,
+  } as React.CSSProperties;
 
   const terminalStyle: React.CSSProperties = terminalPanel
     ? { height: `${fleetTerminalHeight}px` }
     : {};
+
+  const gridClasses = [
+    'fleet-island-grid',
+    leftPanelCollapsed ? 'sidebar-collapsed' : '',
+    !fleetAiPanelVisible ? 'ai-panel-hidden' : '',
+    isDragging ? 'is-resizing' : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <div className="fleet-workspace-page">
       {titleBar}
       <div
         ref={gridRef}
-        className={`fleet-island-grid ${leftPanelCollapsed ? 'sidebar-collapsed' : ''} ${isDragging ? 'is-resizing' : ''}`}
+        className={gridClasses}
         style={gridStyle}
       >
         {!leftPanelCollapsed ? (
@@ -159,13 +165,17 @@ export const FleetWorkspacePage: React.FC<FleetWorkspacePageProps> = ({
             </>
           ) : null}
         </section>
-        <div
-          className={`fleet-resize-handle fleet-resize-handle-horizontal fleet-resize-handle-ai ${activeHandle === 'ai' ? 'dragging' : ''} ${leftPanelCollapsed ? 'sidebar-collapsed' : ''}`}
-          onMouseDown={beginAiPanelResize}
-          role="separator"
-          aria-label="调整 AI 面板宽度"
-        />
-        <FleetAssistantPanel currentProjectName={currentProjectName} />
+        {fleetAiPanelVisible ? (
+          <>
+            <div
+              className={`fleet-resize-handle fleet-resize-handle-horizontal fleet-resize-handle-ai ${activeHandle === 'ai' ? 'dragging' : ''} ${leftPanelCollapsed ? 'sidebar-collapsed' : ''}`}
+              onMouseDown={beginAiPanelResize}
+              role="separator"
+              aria-label="调整 AI 面板宽度"
+            />
+            <FleetAssistantPanel currentProjectName={currentProjectName} onClose={onToggleAiPanel} />
+          </>
+        ) : null}
       </div>
       {statusBar}
     </div>

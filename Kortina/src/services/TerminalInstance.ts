@@ -41,6 +41,7 @@ export interface ITerminalInstance {
   write(data: string): void;
   resize(cols: number, rows: number): void;
   clear(): void;
+  updateTheme(): void;
   dispose(): void;
 }
 function getCssVariable(name: string): string {

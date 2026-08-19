@@ -126,7 +126,7 @@ export const SearchPanel: React.FC<SearchPanelProps> = ({
   const resolveAbsolutePath = useCallback((relativeOrAbsolutePath: string) => {
     const normalized = relativeOrAbsolutePath.replace(/\\/g, '/');
     if (!projectPath) return normalized;
-    if (normalized.startsWith('/') || /^[A-Za-z]:\
+    if (normalized.startsWith('/') || /^[A-Za-z]:\//.test(normalized)) {
       return normalized;
     }
     const root = projectPath.replace(/\\/g, '/').replace(/\/$/, '');

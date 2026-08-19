@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useRef, Suspense, useEffect, useMemo } from 'react';
-import { Save, FileText } from 'lucide-react';
 import StatusBar from './components/Core/StatusBar';
 import { FleetSidebar } from './components/Core/FleetSidebar';
 import { FleetTitleBar } from './components/Core/FleetTitleBar';
@@ -134,7 +133,9 @@ function App() {
     explorerWidth,
     consoleHeight,
     fleetLayout,
-    setFleetLayout
+    setFleetLayout,
+    fleetAiPanelVisible,
+    setFleetAiPanelVisible
   } = useUISettingsStore();
   const {
     isOpen: isTerminalOpen,
@@ -234,6 +235,9 @@ function App() {
   const handleToggleSidebar = useCallback(() => {
     setSidebarCollapsed(!sidebarCollapsed);
   }, [sidebarCollapsed, setSidebarCollapsed]);
+  const handleToggleAiPanel = useCallback(() => {
+    setFleetAiPanelVisible(!fleetAiPanelVisible);
+  }, [fleetAiPanelVisible, setFleetAiPanelVisible]);
   const handleCloseTab = useCallback(() => {
     if (activeTab) closeTab(activeTab);
   }, [activeTab, closeTab]);
@@ -386,12 +390,15 @@ function App() {
         <FleetWorkspacePage
           currentProjectName={dynamicProjectName}
           leftPanelCollapsed={sidebarCollapsed}
+          onToggleAiPanel={handleToggleAiPanel}
           titleBar={<LoadMarker region="top" onMount={markRegionLoaded}>
               <FleetTitleBar
                 projectName={dynamicProjectName}
                 branchName="main"
                 onToggleSidebar={handleToggleSidebar}
                 onToggleTerminal={toggleTerminal}
+                onToggleAiPanel={handleToggleAiPanel}
+                isAiPanelVisible={fleetAiPanelVisible}
                 onOpenSettings={() => void openSettingsWindow()}
                 onRunProject={actions.handleRun}
                 onSearch={() => setCurrentSidebarView('search')}

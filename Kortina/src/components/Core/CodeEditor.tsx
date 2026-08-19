@@ -555,6 +555,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   useEffect(() => {
     if (!editorRef.current) return;
     const editorDom = editorRef.current.getDomNode();
+    if (!editorDom) return;
     if (showGutterHighlight) {
       editorDom.classList.remove('hide-gutter-highlight');
     } else {

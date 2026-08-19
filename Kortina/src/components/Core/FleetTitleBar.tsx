@@ -18,18 +18,33 @@ interface FleetTitleBarProps {
   branchName?: string;
   onToggleSidebar?: () => void;
   onToggleTerminal?: () => void;
+  onToggleAiPanel?: () => void;
+  isAiPanelVisible?: boolean;
   onOpenSettings?: () => void;
   onRunProject?: () => void;
   onSearch?: () => void;
 }
 
-function IconButton({ children, onClick, title }: { children: React.ReactNode; onClick?: () => void; title?: string }) {
+function IconButton({
+  children,
+  onClick,
+  title,
+  active = false,
+  pressed,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  title?: string;
+  active?: boolean;
+  pressed?: boolean;
+}) {
   return (
     <button
       type="button"
-      className="fleet-icon-btn"
+      className={`fleet-icon-btn ${active ? 'active' : ''}`}
       onClick={onClick}
       title={title}
+      aria-pressed={pressed}
     >
       {children}
     </button>
@@ -41,6 +56,8 @@ export const FleetTitleBar: React.FC<FleetTitleBarProps> = ({
   branchName = 'main',
   onToggleSidebar,
   onToggleTerminal,
+  onToggleAiPanel,
+  isAiPanelVisible = true,
   onOpenSettings,
   onRunProject,
   onSearch,
@@ -56,7 +73,12 @@ export const FleetTitleBar: React.FC<FleetTitleBarProps> = ({
           <IconButton onClick={onToggleTerminal} title="切换终端">
             <PanelBottom size={18} strokeWidth={1.5} />
           </IconButton>
-          <IconButton title="右侧面板">
+          <IconButton
+            onClick={onToggleAiPanel}
+            title={isAiPanelVisible ? '隐藏 AI 面板' : '显示 AI 面板'}
+            active={isAiPanelVisible}
+            pressed={isAiPanelVisible}
+          >
             <PanelRight size={18} strokeWidth={1.5} />
           </IconButton>
         </div>

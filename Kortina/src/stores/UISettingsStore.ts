@@ -41,6 +41,7 @@ interface UISettings {
   fleetLayout: boolean;
   fleetSidebarWidth: number;
   fleetAiPanelWidth: number;
+  fleetAiPanelVisible: boolean;
   fleetTerminalHeight: number;
 }
 interface UIActions {
@@ -79,6 +80,7 @@ interface UIActions {
   setFleetLayout: (enabled: boolean) => void;
   setFleetSidebarWidth: (width: number) => void;
   setFleetAiPanelWidth: (width: number) => void;
+  setFleetAiPanelVisible: (visible: boolean) => void;
   setFleetTerminalHeight: (height: number) => void;
   updateSettings: (settings: Partial<UISettings>) => void;
   _emitChange: () => void;
@@ -122,6 +124,7 @@ export const useUISettingsStore = create<UISettings & UIActions>()(persist((set,
   fleetLayout: false,
   fleetSidebarWidth: 270,
   fleetAiPanelWidth: 330,
+  fleetAiPanelVisible: true,
   fleetTerminalHeight: 200,
   setFontSize: fontSize => {
     set({
@@ -324,6 +327,9 @@ export const useUISettingsStore = create<UISettings & UIActions>()(persist((set,
   }),
   setFleetAiPanelWidth: fleetAiPanelWidth => set({
     fleetAiPanelWidth
+  }),
+  setFleetAiPanelVisible: fleetAiPanelVisible => set({
+    fleetAiPanelVisible
   }),
   setFleetTerminalHeight: fleetTerminalHeight => set({
     fleetTerminalHeight
